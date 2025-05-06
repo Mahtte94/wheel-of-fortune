@@ -6,9 +6,9 @@ function App() {
 
   return (
     
-    <div className="App">
+    <div className="">
       <header className="App-header">
-        <h1>Wheel of Fortune</h1>
+        <h1 className='text-4xl text-blue-800'>Wheel of Fortune</h1>
         <p>Welcome to the Wheel of Fortune game!</p>
       </header>
       <main>
