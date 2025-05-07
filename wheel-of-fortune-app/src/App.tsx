@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Wheel from "./components/Wheel";
+import { useWheelSpin } from "./components/useSpin";
 
 const segments = [
   { label: "YOU WIN!", color: "#f87171" },
@@ -11,17 +12,7 @@ const segments = [
 ];
 
 export default function App() {
-  const [angle, setAngle] = useState(0); // Rotation angle of the wheel
-
-  const spin = () => {
-    const spins = 5 * 360; // Number of full spins (five times 360 degrees)
-    const segAngle = 360 / segments.length; // Angle for each segment
-    const rand = Math.floor(Math.random() * segments.length); // Random index of segment array
-    const offset = (Math.random() - 0.5) * (segAngle * 0.8); // Random offset for a more natural spin
-    const target = rand * segAngle + segAngle / 2 + offset; // Target angle for the selected segment to stop at center
-
-    setAngle((prev) => prev + spins + target); // Update the angle state
-  };
+  const { angle, spin } = useWheelSpin(segments); // Custom hook to manage wheel spin
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center space-y-8">
