@@ -11,15 +11,15 @@ const segments = [
 ];
 
 export default function App() {
-  const [angle, setAngle] = useState(0);
+  const [angle, setAngle] = useState(0); // Rotation angle of the wheel
 
   const spin = () => {
-    const spins = 5 * 360;
-    const segAngle = 360 / segments.length;
-    const rand = Math.floor(Math.random() * segments.length);
-    const target = rand * segAngle + segAngle / 2;
+    const spins = 5 * 360; // Number of full spins (five times 360 degrees)
+    const segAngle = 360 / segments.length; // Angle for each segment
+    const rand = Math.floor(Math.random() * segments.length); // Random index of segment array
+    const target = rand * segAngle + segAngle / 2; // Target angle for the selected segment to stop at center
 
-    setAngle((prev) => prev + spins + target);
+    setAngle((prev) => prev + spins + target); // Update the angle state
   };
 
   return (

@@ -10,10 +10,10 @@ type WheelProps = {
   spinningAngle: number;
 };
 
-const Wheel: React.FC<WheelProps> = ({ segments, spinningAngle }) => {
-  const radius = 150;
-  const center = radius;
-  const anglePerSegment = 360 / segments.length;
+const Wheel = ({ segments, spinningAngle }: WheelProps) => {
+  const radius = 150; // Radius of the wheel
+  const center = radius; // Center of the wheel
+  const anglePerSegment = 360 / segments.length; // Angle each segment covers
 
   return (
     <div className="relative w-[300px] h-[300px] mx-auto">
@@ -25,7 +25,7 @@ const Wheel: React.FC<WheelProps> = ({ segments, spinningAngle }) => {
         style={{ transform: `rotate(${spinningAngle}deg)` }}
       >
         {segments.map((seg, i) => {
-          const start = i * anglePerSegment;
+          const start = i * anglePerSegment; //
           const end = start + anglePerSegment;
 
           const rad = (deg: number) => (Math.PI * deg) / 180;
