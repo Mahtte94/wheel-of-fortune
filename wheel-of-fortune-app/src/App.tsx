@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Wheel from "./components/Wheel";
 import { useWheelSpin } from "./components/useSpin";
+import Button from "./components/Button";
 
 const segments = [
   { label: "YOU WIN!", color: "#f87171" },
@@ -19,12 +20,9 @@ export default function App() {
       <h1 className="text-4xl text-blue-800">Wheel of Fortune</h1>
       <p className="text-white-600">Welcome to the Wheel of fortune game.</p>
       <Wheel segments={segments} spinningAngle={angle} />
-      <button
-        className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-        onClick={spin}
-      >
+      <Button onClick={spin} className="mt-4">
         Spin the Wheel!
-      </button>
+      </Button>
     </div>
   );
 }
