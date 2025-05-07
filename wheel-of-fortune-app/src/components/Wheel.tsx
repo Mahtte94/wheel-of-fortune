@@ -25,7 +25,7 @@ const Wheel = ({ segments, spinningAngle }: WheelProps) => {
         style={{ transform: `rotate(${spinningAngle}deg)` }}
       >
         {segments.map((seg, i) => {
-          const start = i * anglePerSegment; //
+          const start = i * anglePerSegment;
           const end = start + anglePerSegment;
 
           const rad = (deg: number) => (Math.PI * deg) / 180;

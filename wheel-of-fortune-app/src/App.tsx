@@ -2,12 +2,12 @@ import { useState } from "react";
 import Wheel from "./components/Wheel";
 
 const segments = [
-  { label: "1", color: "#f87171" },
-  { label: "2", color: "#fbbf24" },
-  { label: "3", color: "#34d399" },
-  { label: "4", color: "#60a5fa" },
-  { label: "5", color: "#a78bfa" },
-  { label: "6", color: "#f472b6" },
+  { label: "YOU WIN!", color: "#f87171" },
+  { label: "You loose...", color: "#fbbf24" },
+  { label: "You loose...", color: "#34d399" },
+  { label: "You loose...", color: "#60a5fa" },
+  { label: "You loose...", color: "#a78bfa" },
+  { label: "You loose...", color: "#f472b6" },
 ];
 
 export default function App() {
