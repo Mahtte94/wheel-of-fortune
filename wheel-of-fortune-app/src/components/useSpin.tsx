@@ -2,8 +2,13 @@ import { useState } from "react";
 
 export function useWheelSpin(segments: { label: string; color: string }[]) {
   const [angle, setAngle] = useState(0); // Rotation angle of the wheel
+  const [isSpinning, setIsSpinning] = useState(false);
 
   const spin = () => {
+    if (isSpinning) return;
+
+    setIsSpinning(true);
+
     const audio = new Audio("/sounds/spin.mp3");
     audio.playbackRate = 0.7; // Set playback speed for the audio
     audio.play();
@@ -15,7 +20,11 @@ export function useWheelSpin(segments: { label: string; color: string }[]) {
     const target = rand * segAngle + segAngle / 2 + offset; // Target angle for the selected segment to stop at center
 
     setAngle((prev) => prev + spins + target); // Update the angle state
+
+    setTimeout(() => {
+      setIsSpinning(false);
+    }, 4000);
   };
 
-  return { angle, spin };
+  return { angle, spin, isSpinning };
 }
