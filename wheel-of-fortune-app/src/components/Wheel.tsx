@@ -11,12 +11,12 @@ type WheelProps = {
 };
 
 const Wheel = ({ segments, spinningAngle }: WheelProps) => {
-  const radius = 150; // Radius of the wheel
+  const radius = 250; // Radius of the wheel
   const center = radius; // Center of the wheel
   const anglePerSegment = 360 / segments.length; // Angle each segment covers
 
   return (
-    <div className="relative w-[300px] h-[300px] mx-auto">
+    <div className="relative w-[500px] h-[500px] mx-auto">
       <svg
         width={radius * 2}
         height={radius * 2}
@@ -51,7 +51,7 @@ const Wheel = ({ segments, spinningAngle }: WheelProps) => {
                 y={ly}
                 textAnchor="middle"
                 dominantBaseline="middle"
-                fontSize="12"
+                fontSize="20"
                 fill="#000"
                 transform={`rotate(${labelAngle}, ${lx}, ${ly})`}
               >
@@ -63,7 +63,7 @@ const Wheel = ({ segments, spinningAngle }: WheelProps) => {
       </svg>
 
       {/* Pointer */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[145px] w-0 h-0 border-l-[10px] border-r-[10px] border-b-[20px] border-l-transparent border-r-transparent border-b-red-600 z-10" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[240px] w-0 h-0 border-l-[10px] border-r-[10px] border-b-[20px] border-l-transparent border-r-transparent border-b-red-600 z-10" />
     </div>
   );
 };
