@@ -4,11 +4,11 @@ import { useWheelSpin } from "./components/useSpin";
 
 const segments = [
   { label: "YOU WIN!", color: "#f87171" },
-  { label: "You loose...", color: "#fbbf24" },
-  { label: "You loose...", color: "#34d399" },
-  { label: "You loose...", color: "#60a5fa" },
-  { label: "You loose...", color: "#a78bfa" },
-  { label: "You loose...", color: "#f472b6" },
+  { label: "You loose", color: "#fbbf24" },
+  { label: "You loose", color: "#34d399" },
+  { label: "You loose", color: "#60a5fa" },
+  { label: "You loose", color: "#a78bfa" },
+  { label: "You loose", color: "#f472b6" },
 ];
 
 export default function App() {
@@ -16,7 +16,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center space-y-8">
-      <h1 className="text-4xl text-blue-800">Wheel of Fortune</h1>
+      <h1 className="text-5xl text-blue-500">Wheel of Fortune</h1>
       <p className="text-white-600">Welcome to the Wheel of fortune game.</p>
       <Wheel segments={segments} spinningAngle={angle} />
       <button
