@@ -1,7 +1,7 @@
 import React from "react";
 
 type WheelSegment = {
-  label: string;
+  label: string | number;
   color: string;
 };
 
@@ -11,12 +11,12 @@ type WheelProps = {
 };
 
 const Wheel = ({ segments, spinningAngle }: WheelProps) => {
-  const radius = 250; // Radius of the wheel
-  const center = radius; // Center of the wheel
-  const anglePerSegment = 360 / segments.length; // Angle each segment covers
+  const radius = 250;
+  const center = radius;
+  const anglePerSegment = 360 / segments.length;
 
   return (
-    <div className="relative w-[500px] h-[500px] mx-auto">
+    <div className="relative w-[500px] h-[500px] mx-auto z-1">
       <svg
         width={radius * 2}
         height={radius * 2}
@@ -35,13 +35,15 @@ const Wheel = ({ segments, spinningAngle }: WheelProps) => {
           const y2 = center + radius * Math.sin(rad(end));
 
           const labelAngle = start + anglePerSegment / 2;
-          const lx = center + (radius / 2) * Math.cos(rad(labelAngle));
-          const ly = center + (radius / 2) * Math.sin(rad(labelAngle));
+          const lx = center + (radius / 1.7) * Math.cos(rad(labelAngle)); 
+          const ly = center + (radius / 1.7) * Math.sin(rad(labelAngle));
 
           return (
             <g key={i}>
               <path
-                d={`M${center},${center} L${x1},${y1} A${radius},${radius} 0 0,1 ${x2},${y2} Z`}
+                d={`M${center},${center} L${x1},${y1} A${radius},${radius} 0 ${
+                  anglePerSegment > 180 ? 1 : 0
+                },1 ${x2},${y2} Z`}
                 fill={seg.color}
                 stroke="#fff"
                 strokeWidth="2"
@@ -51,9 +53,10 @@ const Wheel = ({ segments, spinningAngle }: WheelProps) => {
                 y={ly}
                 textAnchor="middle"
                 dominantBaseline="middle"
-                fontSize="20"
-                fill="#000"
-                transform={`rotate(${labelAngle}, ${lx}, ${ly})`}
+                fontSize="24" 
+                fill="#000" 
+                transform={`rotate(${labelAngle + 90}, ${lx}, ${ly})`}
+                style={{ pointerEvents: 'none', userSelect: 'none' }}
               >
                 {seg.label}
               </text>
