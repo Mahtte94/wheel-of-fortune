@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import Wheel from "./components/Wheel";
 import { useWheelSpin } from "./components/useSpin";
 import Button from "./components/Button";
+import GetApi from "./api/Connection";
+
 
 const segmentsData = [
   { label: 1, color: "#f87171" },
@@ -135,6 +137,8 @@ export default function App() {
           {resultMessage}
         </p>
       )}
+
+      <GetApi/>
     </div>
   );
 }

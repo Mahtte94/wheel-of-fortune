@@ -15,6 +15,8 @@ const Wheel = ({ segments, spinningAngle }: WheelProps) => {
   const center = radius;
   const anglePerSegment = 360 / segments.length;
 
+  
+
   return (
     <div className="relative w-[500px] h-[500px] mx-auto z-1">
       <svg
