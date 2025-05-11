@@ -3,63 +3,69 @@ import { useState } from "react";
 export function useWheelSpin(
   segments: { label: string | number; color: string }[]
 ) {
-  const [angle, setAngle] = useState(0); // Rotation angle of the wheel
+  const [angle, setAngle] = useState(0);
   const [isSpinning, setIsSpinning] = useState(false);
-  const [winningSegmentIndex, setWinningSegmentIndex] = useState<number | null>(
-    null
-  );
+  const [winningSegmentIndex, setWinningSegmentIndex] = useState<number | null>(null);
 
   const resetSpin = () => {
     setWinningSegmentIndex(null);
     setAngle(0);
   };
 
-  const getRotationForWinningSegment = (targetSegmentIndex: number) => {
-    const segmentSize = 360 / segments.length;
-
-    // Find the center angle of the target segment
-    const segmentCenterAngle =
-      targetSegmentIndex * segmentSize + segmentSize / 2;
-
-    // Calculate how much to rotate so this segment center is at the pointer (270°)
-    const baseRotation = 270 - segmentCenterAngle;
-
-    // Make sure the rotation is positive
-    const positiveRotation =
-      baseRotation < 0 ? baseRotation + 360 : baseRotation;
-
-    // Add multiple spins
-    const spins = 5 * 360;
-
-    // Add a small random offset for natural feel
-    const offset = (Math.random() - 0.5) * (segmentSize * 0.5);
-
-    return positiveRotation + spins + offset;
+  const calculateActualWinningSegment = (finalAngle: number) => {
+    // Normalize the angle to 0-360 range
+    const normalizedAngle = ((finalAngle % 360) + 360) % 360;
+    
+    // The pointer is at 270 degrees
+    // Calculate which segment is under the pointer
+    const segmentAngle = 360 / segments.length;
+    
+    // Find which segment the pointer (at 270°) is pointing to
+    // We need to account for the wheel's rotation
+    const pointerPosition = (270 - normalizedAngle + 360) % 360;
+    const segmentIndex = Math.floor(pointerPosition / segmentAngle);
+    
+    return segmentIndex;
   };
 
   const spin = () => {
     if (isSpinning) return;
 
     setIsSpinning(true);
-    setWinningSegmentIndex(null); // Reset winning index before new spin
+    setWinningSegmentIndex(null);
 
     const audio = new Audio("/sounds/spin.mp3");
     audio.playbackRate = 0.7;
     audio.play();
 
-    // Choose a random segment to be the winner
-    const randomSegmentIndex = Math.floor(Math.random() * segments.length);
-
-    // Calculate the rotation needed to land this segment under the pointer
-    const rotationNeeded = getRotationForWinningSegment(randomSegmentIndex);
-
-    // Set the new angle (adding to current angle)
-    setAngle((prevAngle) => prevAngle + rotationNeeded);
-
-    // After animation completes, update winning segment
+    // Choose a random winning segment
+    const targetSegmentIndex = Math.floor(Math.random() * segments.length);
+    
+    // Calculate the angle needed to land on this segment
+    const segmentAngle = 360 / segments.length;
+    const segmentCenter = targetSegmentIndex * segmentAngle + segmentAngle / 2;
+    
+    // To put this segment under the pointer (at 270°), we need to rotate
+    const rotationToCenter = 270 - segmentCenter;
+    
+    // Add full rotations (5-8 full spins)
+    const fullRotations = (Math.floor(Math.random() * 4) + 5) * 360;
+    
+    // Add some random offset for natural feel
+    const randomOffset = (Math.random() - 0.5) * segmentAngle * 0.7;
+    
+    // Calculate total rotation needed
+    const totalRotation = rotationToCenter + fullRotations + randomOffset;
+    
+    // Apply the rotation
+    const newAngle = angle + totalRotation;
+    setAngle(newAngle);
+    
+    // After animation completes, verify the actual winning segment
     setTimeout(() => {
+      const actualWinningIndex = calculateActualWinningSegment(newAngle);
       setIsSpinning(false);
-      setWinningSegmentIndex(randomSegmentIndex);
+      setWinningSegmentIndex(actualWinningIndex);
     }, 4000);
   };
 
