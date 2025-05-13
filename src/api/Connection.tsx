@@ -22,8 +22,8 @@ const GetApi = ({}: GetApiProps = {}) => {
   const [result, setResult] = useState<string>("Click the button to test");
   const [loading, setLoading] = useState<boolean>(false);
 
-   const apiUrl: string = "/api/test";
-  // const apiUrl: string = "https://yrgobanken.vip/api/test";
+  //  const apiUrl: string = "/api/test";
+   const apiUrl: string = "https://yrgobanken.vip/api/test";
 
   const testApi = async (): Promise<void> => {
     setLoading(true);
