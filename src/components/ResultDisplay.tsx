@@ -9,14 +9,10 @@ const ResultDisplay = ({ resultMessage, winnings }: ResultDisplayProps) => {
   if (!resultMessage) return null;
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 max-w-64">
       <p
         className={`text-xl text-center p-4 rounded-md shadow-lg font-semibold
-        ${
-          winnings > 0
-            ? "bg-green-600 text-white"
-            : "bg-red-700 text-white"
-        }`}
+        ${winnings > 0 ? "bg-green-600 text-white" : "bg-red-700 text-white"}`}
       >
         {resultMessage}
       </p>

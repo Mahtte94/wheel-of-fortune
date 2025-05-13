@@ -44,37 +44,40 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center space-y-6 p-4 bg-gray-800 text-gray-100">
-      <h1 className="text-4xl font-bold text-blue-400">Wheel of Fortune</h1>
-      <p className="text-lg text-gray-300">
-        Guess which number the wheel will land on!
-      </p>
+    <div className="flex flex-row items-center justify-around bg-gray-800">
+      <div className="min-h-screen flex flex-col items-center justify-center space-y-6 p-4 bg-gray-800 text-gray-100">
+        <h1 className="text-4xl font-bold text-blue-400">Wheel of Fortune</h1>
+        <p className="text-lg text-gray-300">
+          Guess which number the wheel will land on!
+        </p>
 
-      <MoneyDisplay playerMoney={playerMoney} canAffordSpin={canAffordSpin} />
+        <MoneyDisplay playerMoney={playerMoney} canAffordSpin={canAffordSpin} />
 
-      <NumberSelector
-        segments={segmentsData}
-        selectedIndex={playerGuessIndex}
-        onSelect={setPlayerGuessIndex}
-        isSpinning={isSpinning}
-        lockedGuessIndex={lockedGuessIndex}
-      />
+        <NumberSelector
+          segments={segmentsData}
+          selectedIndex={playerGuessIndex}
+          onSelect={setPlayerGuessIndex}
+          isSpinning={isSpinning}
+          lockedGuessIndex={lockedGuessIndex}
+        />
 
-      <Wheel segments={segmentsData} spinningAngle={angle} />
+        <GameButtons
+          gameStarted={gameStarted}
+          gameCompleted={gameCompleted}
+          isSpinning={isSpinning}
+          playerGuessIndex={playerGuessIndex}
+          canAffordSpin={canAffordSpin}
+          onSpin={handleSpinClick}
+          onPlayAgain={handlePlayAgain}
+        />
 
-      <GameButtons
-        gameStarted={gameStarted}
-        gameCompleted={gameCompleted}
-        isSpinning={isSpinning}
-        playerGuessIndex={playerGuessIndex}
-        canAffordSpin={canAffordSpin}
-        onSpin={handleSpinClick}
-        onPlayAgain={handlePlayAgain}
-      />
+        <ResultDisplay resultMessage={resultMessage} winnings={winnings} />
+      </div>
+      <div className="flex flex-col">
+        <Wheel segments={segmentsData} spinningAngle={angle} />
 
-      <ResultDisplay resultMessage={resultMessage} winnings={winnings} />
-
-      <GetApi />
+        <GetApi />
+      </div>
     </div>
   );
 }
