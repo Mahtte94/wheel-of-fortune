@@ -8,8 +8,8 @@ type MoneyDisplayProps = {
 
 const MoneyDisplay = ({ playerMoney, canAffordSpin }: MoneyDisplayProps) => {
   return (
-    <>
-      <div className="bg-gray-700 px-6 py-3 rounded-lg border-2 border-yellow-400">
+    <div className="w-full max-w-md">
+      <div className="bg-gray-700 px-4 md:px-6 py-3 rounded-lg border-2 border-yellow-400">
         <div className="text-center">
           <p className="text-sm text-gray-300">Your Money</p>
           <p className="text-2xl font-bold text-yellow-400">${playerMoney}</p>
@@ -20,11 +20,11 @@ const MoneyDisplay = ({ playerMoney, canAffordSpin }: MoneyDisplayProps) => {
       </div>
 
       {!canAffordSpin && (
-        <div className="bg-red-700 text-white px-6 py-3 rounded-lg">
+        <div className="bg-red-700 text-white px-4 md:px-6 py-3 rounded-lg mt-2 text-sm md:text-base">
           <p className="text-center">Not enough money to spin! You need at least ${SPIN_COST}</p>
         </div>
       )}
-    </>
+    </div>
   );
 };
 
