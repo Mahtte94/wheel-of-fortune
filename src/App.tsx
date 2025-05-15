@@ -6,6 +6,7 @@ import MoneyDisplay from "./components/MoneyDisplay";
 import ResultDisplay from "./components/ResultDisplay";
 import GetApi from "./api/Connection";
 import { segmentsData } from "./gameConstants";
+import { useEffect } from "react";
 
 export default function App() {
   const { angle, spin, isSpinning, winningSegmentIndex, resetSpin } =
@@ -34,6 +35,23 @@ export default function App() {
     resetGame();
     spin();
   };
+
+  //Event så att det går att snurra hjulet med mellanslag
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // Kolla om tangenten är mellanslag och att knappen inte är inaktiverad
+      if (event.code === "Space" && canAffordSpin && !isSpinning) {
+        event.preventDefault(); // Förhindra scrollning som mellanslag normalt orsakar
+        handleSpinClick();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [canAffordSpin, isSpinning]);
 
   return (
     <div className="flex flex-col md:flex-row bg-gray-800 min-h-screen">
