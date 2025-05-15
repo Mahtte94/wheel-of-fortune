@@ -1,4 +1,3 @@
-import React from "react";
 import { WheelSegment } from "../gameConstants";
 
 type NumberSelectorProps = {
@@ -9,12 +8,12 @@ type NumberSelectorProps = {
   lockedGuessIndex: number | null;
 };
 
-const NumberSelector = ({ 
-  segments, 
-  selectedIndex, 
-  onSelect, 
+const NumberSelector = ({
+  segments,
+  selectedIndex,
+  onSelect,
   isSpinning,
-  lockedGuessIndex
+  lockedGuessIndex,
 }: NumberSelectorProps) => {
   return (
     <div className="my-4 w-full max-w-md">
@@ -35,11 +34,7 @@ const NumberSelector = ({
                   ? "ring-4 ring-offset-2 ring-offset-gray-800 ring-white scale-105"
                   : "opacity-80 hover:opacity-100"
               }
-              ${
-                lockedGuessIndex === index
-                  ? "ring-2 ring-yellow-300"
-                  : ""
-              }
+              ${lockedGuessIndex === index ? "ring-2 ring-yellow-300" : ""}
             `}
             style={{ backgroundColor: segment.color }}
             disabled={isSpinning}
