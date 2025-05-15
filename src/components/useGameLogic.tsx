@@ -1,9 +1,12 @@
 import { useState, useEffect } from "react";
-import { segmentsData, SPIN_COST, WIN_MULTIPLIER } from "../gameConstants";
+import { SPIN_COST, WIN_MULTIPLIER } from "../gameConstants";
+
+type Segment = { label: string | number; color: string };
 
 export function useGameLogic(
   isSpinning: boolean,
   winningSegmentIndex: number | null,
+  segments: Segment[],
   addMoney: (amount: number) => void,
   addFreeSpin: () => void
 ) {
@@ -12,7 +15,7 @@ export function useGameLogic(
 
   useEffect(() => {
     if (!isSpinning && winningSegmentIndex !== null) {
-      const result = segmentsData[winningSegmentIndex].label;
+      const result = segments[winningSegmentIndex].label;
 
       if (result === "JACKPOT") {
         const payout = SPIN_COST * WIN_MULTIPLIER;
@@ -31,7 +34,7 @@ export function useGameLogic(
 
       setGameCompleted(true);
     }
-  }, [isSpinning, winningSegmentIndex, addMoney, addFreeSpin]);
+  }, [isSpinning, winningSegmentIndex, segments, addMoney, addFreeSpin]);
 
   const resetGame = () => {
     setResultMessage("");

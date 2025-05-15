@@ -7,10 +7,13 @@ import ResultDisplay from "./components/ResultDisplay";
 import GetApi from "./api/Connection";
 import { segmentsData } from "./gameConstants";
 import { useEffect } from "react";
+import { useState } from "react";
 
 export default function App() {
+  const [segments] = useState(() => segmentsData);
+
   const { angle, spin, isSpinning, winningSegmentIndex, resetSpin } =
-    useWheelSpin(segmentsData);
+    useWheelSpin(segments);
 
   const {
     playerMoney,
@@ -24,6 +27,7 @@ export default function App() {
   const { resultMessage, gameCompleted, resetGame } = useGameLogic(
     isSpinning,
     winningSegmentIndex,
+    segmentsData,
     addMoney,
     addFreeSpin
   );
