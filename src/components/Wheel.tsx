@@ -1,5 +1,3 @@
-import React from "react";
-
 type WheelSegment = {
   label: string | number;
   color: string;
@@ -23,7 +21,9 @@ const Wheel = ({ segments, spinningAngle }: WheelProps) => {
       </div>
 
       {/* Wheel container */}
-      <div className="pt-10"> {/* Add padding top to make room for the pointer */}
+      <div className="pt-10">
+        {" "}
+        {/* Add padding top to make room for the pointer */}
         <svg
           width="100%"
           height="100%"
@@ -43,7 +43,7 @@ const Wheel = ({ segments, spinningAngle }: WheelProps) => {
             const y2 = center + baseRadius * Math.sin(rad(end));
 
             const labelAngle = start + anglePerSegment / 2;
-            const lx = center + (baseRadius / 1.7) * Math.cos(rad(labelAngle)); 
+            const lx = center + (baseRadius / 1.7) * Math.cos(rad(labelAngle));
             const ly = center + (baseRadius / 1.7) * Math.sin(rad(labelAngle));
 
             return (
@@ -61,11 +61,11 @@ const Wheel = ({ segments, spinningAngle }: WheelProps) => {
                   y={ly}
                   textAnchor="middle"
                   dominantBaseline="middle"
-                  fontSize="24" 
-                  fill="#000" 
+                  fontSize="24"
+                  fill="#000"
                   fontWeight="bold"
                   transform={`rotate(${labelAngle + 90}, ${lx}, ${ly})`}
-                  style={{ pointerEvents: 'none', userSelect: 'none' }}
+                  style={{ pointerEvents: "none", userSelect: "none" }}
                 >
                   {seg.label}
                 </text>
