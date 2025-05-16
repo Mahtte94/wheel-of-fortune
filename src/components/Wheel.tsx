@@ -31,7 +31,9 @@ const Wheel = ({ segments, spinningAngle }: WheelProps) => {
           viewBox={`0 0 ${baseRadius * 2} ${baseRadius * 2}`}
           preserveAspectRatio="xMidYMid meet"
           className="transition-transform duration-[4s] ease-out"
-          style={{ transform: `rotate(${spinningAngle}deg)` }}
+          style={
+            { transform: `rotate(${spinningAngle}deg)` } as React.CSSProperties
+          }
         >
           {segments.map((seg, i) => {
             const start = i * anglePerSegment;
@@ -68,7 +70,12 @@ const Wheel = ({ segments, spinningAngle }: WheelProps) => {
                   fill="#000"
                   fontWeight="bold"
                   transform={`rotate(${labelAngle}, ${lx}, ${ly})`}
-                  style={{ pointerEvents: "none", userSelect: "none" }}
+                  style={
+                    {
+                      pointerEvents: "none",
+                      msUserSelect: "none",
+                    } as React.CSSProperties
+                  }
                 >
                   {seg.label}
                 </text>
