@@ -11,6 +11,7 @@ export function useWheelSpin(
   const [angle, setAngle] = useState(0);
   const [isSpinning, setIsSpinning] = useState(false);
   const [isSpinCycleActive, setIsSpinCycleActive] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
   const [winningSegmentIndex, setWinningSegmentIndex] = useState<number | null>(
     null
   );
@@ -24,9 +25,11 @@ export function useWheelSpin(
   ];
 
   const resetSpin = () => {
+    setIsResetting(true);
     setWinningSegmentIndex(null);
     setAngle(0);
     setTimeout(() => setIsSpinCycleActive(false), 4000);
+    setTimeout(() => setIsResetting(false), 4000);
   };
 
   // Weighted outcome roll
@@ -87,6 +90,7 @@ export function useWheelSpin(
     angle,
     spin,
     isSpinning,
+    isResetting,
     isSpinCycleActive,
     winningSegmentIndex,
     resetSpin,
