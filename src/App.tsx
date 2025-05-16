@@ -11,8 +11,14 @@ import { useEffect, useState } from "react";
 export default function App() {
   const [segments] = useState(() => segmentsData);
 
-  const { angle, spin, isSpinning, winningSegmentIndex, resetSpin } =
-    useWheelSpin(segments);
+  const {
+    angle,
+    spin,
+    isSpinning,
+    isSpinCycleActive,
+    winningSegmentIndex,
+    resetSpin,
+  } = useWheelSpin(segments);
 
   const {
     playerMoney,
@@ -44,7 +50,7 @@ export default function App() {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       // Kolla om tangenten är mellanslag och att knappen inte är inaktiverad
-      if (event.code === "Space" && canAffordSpin && !isSpinning) {
+      if (event.code === "Space" && canAffordSpin && !isSpinCycleActive) {
         event.preventDefault(); // Förhindra scrollning som mellanslag normalt orsakar
         handleSpinClick();
       }
@@ -55,7 +61,7 @@ export default function App() {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [canAffordSpin, isSpinning]);
+  }, [canAffordSpin, isSpinCycleActive]);
 
   return (
     <div className="flex flex-col md:flex-row bg-gray-800 min-h-screen">
@@ -80,7 +86,7 @@ export default function App() {
           <div className="mt-4 w-full flex justify-center">
             <button
               onClick={handleSpinClick}
-              disabled={!canAffordSpin || isSpinning}
+              disabled={!canAffordSpin || isSpinCycleActive}
               className="px-6 py-3 bg-blue-500 text-white text-lg rounded disabled:bg-gray-500"
             >
               {isSpinning
@@ -116,7 +122,7 @@ export default function App() {
           <div className="mt-4">
             <button
               onClick={handleSpinClick}
-              disabled={!canAffordSpin || isSpinning}
+              disabled={!canAffordSpin || isSpinCycleActive}
               className="px-8 py-4 bg-blue-500 text-white text-xl rounded disabled:bg-gray-500"
             >
               {isSpinning

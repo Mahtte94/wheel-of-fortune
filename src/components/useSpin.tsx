@@ -10,6 +10,7 @@ export function useWheelSpin(
 ) {
   const [angle, setAngle] = useState(0);
   const [isSpinning, setIsSpinning] = useState(false);
+  const [isSpinCycleActive, setIsSpinCycleActive] = useState(false);
   const [winningSegmentIndex, setWinningSegmentIndex] = useState<number | null>(
     null
   );
@@ -25,6 +26,7 @@ export function useWheelSpin(
   const resetSpin = () => {
     setWinningSegmentIndex(null);
     setAngle(0);
+    setTimeout(() => setIsSpinCycleActive(false), 4000);
   };
 
   // Weighted outcome roll
@@ -45,6 +47,7 @@ export function useWheelSpin(
     if (isSpinning) return;
 
     setIsSpinning(true);
+    setIsSpinCycleActive(true);
     setWinningSegmentIndex(null);
 
     const audio = new Audio("/sounds/spin.mp3");
@@ -80,5 +83,12 @@ export function useWheelSpin(
     }, 4000);
   };
 
-  return { angle, spin, isSpinning, winningSegmentIndex, resetSpin };
+  return {
+    angle,
+    spin,
+    isSpinning,
+    isSpinCycleActive,
+    winningSegmentIndex,
+    resetSpin,
+  };
 }
