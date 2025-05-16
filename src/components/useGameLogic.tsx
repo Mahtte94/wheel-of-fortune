@@ -12,6 +12,7 @@ export function useGameLogic(
 ) {
   const [resultMessage, setResultMessage] = useState<string>("");
   const [gameCompleted, setGameCompleted] = useState<boolean>(false);
+  const [outcomeType, setOutcomeType] = useState<string | undefined>();
 
   useEffect(() => {
     if (!isSpinning && winningSegmentIndex !== null) {
@@ -21,15 +22,19 @@ export function useGameLogic(
         const payout = SPIN_COST * WIN_MULTIPLIER;
         addMoney(payout);
         setResultMessage(`JACKPOT! You win $${payout}!`);
+        setOutcomeType("JACKPOT");
       } else if (result === "2X WIN") {
         const payout = SPIN_COST * 2;
         addMoney(payout);
         setResultMessage(`You win double! $${payout}!`);
+        setOutcomeType("2X WIN");
       } else if (result === "FREE SPIN") {
         addFreeSpin();
         setResultMessage(`You got a free spin!`);
+        setOutcomeType("FREE SPIN");
       } else {
         setResultMessage(`Try again! No winnings this time.`);
+        setOutcomeType("TRY AGAIN");
       }
 
       setGameCompleted(true);
@@ -39,11 +44,13 @@ export function useGameLogic(
   const resetGame = () => {
     setResultMessage("");
     setGameCompleted(false);
+    setOutcomeType(undefined);
   };
 
   return {
     resultMessage,
     gameCompleted,
     resetGame,
+    outcomeType,
   };
 }

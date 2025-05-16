@@ -29,7 +29,7 @@ export default function App() {
     addFreeSpin,
   } = useMoney();
 
-  const { resultMessage, gameCompleted, resetGame } = useGameLogic(
+  const { resultMessage, gameCompleted, resetGame, outcomeType } = useGameLogic(
     isSpinning,
     winningSegmentIndex,
     segmentsData,
@@ -134,7 +134,11 @@ export default function App() {
           </div>
 
           <div className="mt-6">
-            <ResultDisplay resultMessage={resultMessage} winnings={0} />
+            <ResultDisplay
+              resultMessage={resultMessage}
+              winnings={0}
+              outcomeType={outcomeType}
+            />
           </div>
         </div>
 
