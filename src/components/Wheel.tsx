@@ -1,5 +1,3 @@
-import React from "react";
-
 type WheelSegment = {
   label: string | number;
   color: string;
