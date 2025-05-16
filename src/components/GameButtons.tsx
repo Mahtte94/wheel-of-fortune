@@ -1,4 +1,3 @@
-import React from "react";
 import Button from "./Button";
 import { SPIN_COST } from "../gameConstants";
 
@@ -51,7 +50,9 @@ const GameButtons = ({
       disabled={!canAffordSpin}
       className="mt-4 text-base md:text-lg px-6 md:px-8 py-3 bg-green-600 hover:bg-green-700 active:bg-green-800 z-10 w-full max-w-xs"
     >
-      {canAffordSpin ? `Play Again ($${SPIN_COST})` : `Need $${SPIN_COST} to Play Again`}
+      {canAffordSpin
+        ? `Play Again ($${SPIN_COST})`
+        : `Need $${SPIN_COST} to Play Again`}
     </Button>
   );
 };
