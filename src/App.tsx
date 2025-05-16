@@ -37,6 +37,7 @@ export default function App() {
     deductSpinCost();
     resetGame();
     spin();
+    setTimeout(resetSpin, 5000);
   };
 
   //Event så att det går att snurra hjulet med mellanslag
