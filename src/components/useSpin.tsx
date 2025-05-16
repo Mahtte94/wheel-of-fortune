@@ -70,9 +70,8 @@ export function useWheelSpin(
     const fullRotations = (Math.floor(Math.random() * 4) + 5) * 360;
     const randomOffset = (Math.random() - 0.5) * segmentAngle * 0.7;
     const totalRotation = rotationToCenter + fullRotations + randomOffset;
-    const newAngle = angle + totalRotation;
 
-    setAngle(newAngle);
+    setAngle(totalRotation);
 
     // Set winner after spin animation
     setTimeout(() => {
