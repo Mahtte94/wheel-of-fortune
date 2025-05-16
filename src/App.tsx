@@ -6,8 +6,7 @@ import MoneyDisplay from "./components/MoneyDisplay";
 import ResultDisplay from "./components/ResultDisplay";
 import GetApi from "./api/Connection";
 import { segmentsData } from "./gameConstants";
-import { useEffect } from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function App() {
   const [segments] = useState(() => segmentsData);
