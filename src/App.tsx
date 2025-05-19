@@ -15,6 +15,7 @@ export default function App() {
     angle,
     spin,
     isSpinning,
+    isResetting,
     isSpinCycleActive,
     winningSegmentIndex,
     resetSpin,
@@ -29,7 +30,7 @@ export default function App() {
     addFreeSpin,
   } = useMoney();
 
-  const { resultMessage, gameCompleted, resetGame } = useGameLogic(
+  const { resultMessage, gameCompleted, resetGame, outcomeType } = useGameLogic(
     isSpinning,
     winningSegmentIndex,
     segmentsData,
@@ -74,6 +75,11 @@ export default function App() {
 
           <div className="mt-4 w-full">
             <Wheel segments={segmentsData} spinningAngle={angle} />
+            {isResetting && (
+              <p className="text-center text-2xl text-yellow-500 bold mt-2 animate-pulse">
+                Resetting wheel...
+              </p>
+            )}
           </div>
 
           <div className="mt-4 w-full flex justify-center">
@@ -134,12 +140,22 @@ export default function App() {
           </div>
 
           <div className="mt-6">
-            <ResultDisplay resultMessage={resultMessage} winnings={0} />
+            <ResultDisplay
+              resultMessage={resultMessage}
+              winnings={0}
+              outcomeType={outcomeType}
+            />
           </div>
         </div>
 
         <div className="flex flex-col w-1/2 items-center justify-center p-6">
           <Wheel segments={segmentsData} spinningAngle={angle} />
+          {isResetting && (
+            <p className="text-center text-2xl text-yellow-500 bold mt-2 animate-pulse">
+              Resetting wheel...
+            </p>
+          )}
+
           <GetApi />
         </div>
       </div>
