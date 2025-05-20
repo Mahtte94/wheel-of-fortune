@@ -7,9 +7,39 @@ import ResultDisplay from "./components/ResultDisplay";
 import GetApi from "./api/Connection";
 import { segmentsData } from "./gameConstants";
 import { useEffect, useState } from "react";
+import { decodeJwt } from "./components/decodeUtil"
+
+//for deploy?
+// interface MyTokenPayload {
+//   sub: string;
+//   name: string;
+//   exp: number;
+//   [key: string]: any;
+// }
 
 export default function App() {
   const [segments] = useState(() => segmentsData);
+  useEffect(() => {
+    const testToken =
+    "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9." +
+    "eyJpc3MiOiJ5cmdvYmFua2VuLnZpcCIsInN1YiI6OSwiZW1haWwiOiJtYXR0ZV9oYWxvQGxpdmUuc2UiLCJpYXQiOjE3NDc3Njc5NDksImV4cCI6MTc0Nzc4MjM0OX0." +
+    "xa0vDJYaystfpk6k050O67YUh3IGSOasaYIVyX-8ikU";
+  
+    const decoded = decodeJwt(testToken);
+    console.log("Decoded JWT for testing:", decoded);
+  }, []);
+
+  // for deploy?
+  // useEffect(() => {
+  //   const token = localStorage.getItem("token");
+  //   if (token) {
+  //     const decoded = decodeJwt<MyTokenPayload>(token);
+  //     if (decoded) {
+  //       console.log("Decoded JWT:", decoded);
+       
+  //     }
+  //   }
+  // }, []);
 
   const {
     angle,
