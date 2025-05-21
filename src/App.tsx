@@ -4,7 +4,7 @@ import { useMoney } from "./components/useMoney";
 import { useGameLogic } from "./components/useGameLogic";
 import MoneyDisplay from "./components/MoneyDisplay";
 import ResultDisplay from "./components/ResultDisplay";
-import GetApi from "./api/Connection";
+
 import { segmentsData } from "./gameConstants";
 import { useEffect, useState } from "react";
 import { decodeJwt } from "./components/decodeUtil";
@@ -153,11 +153,10 @@ export default function App() {
           </div>
 
           <div className="mt-4 w-full flex justify-center">
-            <MoneyDisplay
-              tivoliBalance={playerMoney}
-              canAffordSpin={canAffordSpin}
-              isLoading={isBalanceLoading}
-            />
+          <MoneyDisplay
+  canAffordSpin={canAffordSpin}
+  isLoading={isBalanceLoading}
+/>
           </div>
 
           <div className="mt-4 w-full flex justify-center">
@@ -183,7 +182,7 @@ export default function App() {
           </div>
 
           <div className="mt-4">
-            <GetApi />
+           
           </div>
         </div>
       </div>
@@ -196,10 +195,9 @@ export default function App() {
           </h1>
 
           <MoneyDisplay
-              tivoliBalance={playerMoney}
-              canAffordSpin={canAffordSpin}
-              isLoading={isBalanceLoading}
-            />
+  canAffordSpin={canAffordSpin}
+  isLoading={isBalanceLoading}
+/>
 
           <div className="mt-4">
             <button
@@ -233,7 +231,7 @@ export default function App() {
             </p>
           )}
 
-          <GetApi />
+          
          
 <div className="mt-4 p-3 bg-gray-700 text-white rounded">
   <p>Tivoli Auth Status: {tivoliAuthStatus || "Checking..."}</p>

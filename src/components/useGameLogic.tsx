@@ -55,7 +55,7 @@ export function useGameLogic(
   const reportResultToTivoliApi = async (amount: number) => {
     try {
       if (amount > 0) {
-        await TivoliApiService.reportWinnings(amount);
+        await TivoliApiService.reportWinnings();
       }
       setApiError(null);
     } catch (error) {

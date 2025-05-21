@@ -1,77 +1,42 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { SPIN_COST } from "../gameConstants";
 import TivoliApiService from "../api/TivoliApiService";
 
 export function useMoney() {
-  const [tivoliBalance, setTivoliBalance] = useState<number | null>(null);
   const [freeSpins, setFreeSpins] = useState<number>(0);
   const [isBalanceLoading, setIsBalanceLoading] = useState<boolean>(false);
   const [apiError, setApiError] = useState<string | null>(null);
+  
+  // Simplified: We'll just assume the player always has money unless an error occurs
+  const [canAfford, setCanAfford] = useState<boolean>(true);
 
-  // Fetch Tivoli balance on component mount and periodically
-  useEffect(() => {
-    const fetchTivoliBalance = async () => {
-      if (!localStorage.getItem("token")) return;
-      
-      setIsBalanceLoading(true);
-      try {
-        const balance = await TivoliApiService.getUserBalance();
-        setTivoliBalance(balance);
-        setApiError(null);
-      } catch (error) {
-        console.error("Failed to fetch Tivoli balance:", error);
-        setApiError("Failed to connect to Tivoli");
-      } finally {
-        setIsBalanceLoading(false);
-      }
-    };
-
-    fetchTivoliBalance();
-    
-    // Refresh the balance every 30 seconds
-    const intervalId = setInterval(fetchTivoliBalance, 30000);
-    
-    return () => clearInterval(intervalId);
-  }, []);
-
-  // Determine if the player can afford a spin
-  const canAffordSpin = (tivoliBalance !== null && tivoliBalance >= SPIN_COST) || freeSpins > 0;
-
-  // Deduct spin cost by reporting to Tivoli API
   const deductSpinCost = useCallback(async () => {
     if (freeSpins > 0) {
       setFreeSpins(freeSpins - 1);
       return true;
-    } else if (tivoliBalance !== null && tivoliBalance >= SPIN_COST) {
+    } else {
       try {
-        // This now uses the transactionService under the hood
-        await TivoliApiService.reportSpin(SPIN_COST);
-        
-        // Update the balance after transaction
-        const newBalance = await TivoliApiService.getUserBalance();
-        setTivoliBalance(newBalance);
-        
+        setIsBalanceLoading(true);
+        // Call transactionService via TivoliApiService
+        await TivoliApiService.reportSpin();
         setApiError(null);
+        setCanAfford(true);
         return true;
       } catch (error) {
         console.error("Error deducting spin cost:", error);
         setApiError(error instanceof Error ? error.message : "Failed to process spin");
+        setCanAfford(false);
         return false;
+      } finally {
+        setIsBalanceLoading(false);
       }
     }
-    return false;
-  }, [tivoliBalance, freeSpins]);
+  }, [freeSpins]);
 
-  // Add money by reporting a win to Tivoli API
   const addMoney = useCallback(async (amount: number) => {
     try {
-      // This now uses the transactionService under the hood
-      await TivoliApiService.reportWinnings(amount);
-      
-      // Update the balance after transaction
-      const newBalance = await TivoliApiService.getUserBalance();
-      setTivoliBalance(newBalance);
-      
+      // Call transactionService via TivoliApiService
+      await TivoliApiService.reportWinnings();
       setApiError(null);
       return true;
     } catch (error) {
@@ -81,15 +46,14 @@ export function useMoney() {
     }
   }, []);
 
-  // Add a free spin
   const addFreeSpin = useCallback(() => {
     setFreeSpins((prev) => prev + 1);
   }, []);
 
   return {
-    playerMoney: tivoliBalance ?? 0, // Use tivoliBalance but keep the same property name
+    playerMoney: 100, // Just a placeholder value since you don't need to show actual balance
     freeSpins,
-    canAffordSpin,
+    canAffordSpin: canAfford,
     deductSpinCost,
     addMoney,
     addFreeSpin,
