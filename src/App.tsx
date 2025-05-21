@@ -145,6 +145,51 @@ export default function App() {
     );
   };
 
+  // Add this component to your App.tsx
+const TokenDebugger = () => {
+  const [token, setToken] = useState<string | null>(null);
+  
+  useEffect(() => {
+    // Get token from localStorage
+    const storedToken = localStorage.getItem('token');
+    
+    // Get token from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const tokenFromUrl = urlParams.get("token");
+    
+    setToken(storedToken || tokenFromUrl || null);
+  }, []);
+  
+  return (
+    <div className="mt-4 p-3 bg-gray-800 text-white rounded text-sm">
+      <p className="font-bold">Token Status:</p>
+      {token ? (
+        <p className="text-green-400">✓ Token found ({token.substring(0, 10)}...)</p>
+      ) : (
+        <p className="text-red-400">✗ No token found</p>
+      )}
+      
+      <button 
+        className="mt-2 px-3 py-1 bg-blue-500 text-white rounded text-xs"
+        onClick={() => {
+          const urlParams = new URLSearchParams(window.location.search);
+          const tokenFromUrl = urlParams.get("token");
+          
+          if (tokenFromUrl) {
+            localStorage.setItem('token', tokenFromUrl);
+            setToken(tokenFromUrl);
+            alert("Token saved from URL parameter!");
+          } else {
+            alert("No token found in URL parameters!");
+          }
+        }}
+      >
+        Save Token from URL
+      </button>
+    </div>
+  );
+};
+
 
 
   return (
@@ -155,6 +200,8 @@ export default function App() {
           <h1 className="text-3xl font-bold text-blue-400 text-center mt-2">
             Wheel of Fortune
           </h1>
+
+          <TokenDebugger/>
 
           <div className="mt-4 w-full">
             <Wheel segments={segmentsData} spinningAngle={angle} />
