@@ -4,7 +4,7 @@ import { useMoney } from "./components/useMoney";
 import { useGameLogic } from "./components/useGameLogic";
 import MoneyDisplay from "./components/MoneyDisplay";
 import ResultDisplay from "./components/ResultDisplay";
-
+import JwtListener from './components/JwtListener';
 import { segmentsData } from "./gameConstants";
 import { useEffect, useState } from "react";
 import { decodeJwt } from "./components/decodeUtil";
@@ -21,8 +21,31 @@ interface MyTokenPayload {
 
 export default function App() {
   const [segments] = useState(() => segmentsData);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
   const [tivoliAuthStatus, setTivoliAuthStatus] = useState<string | null>(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      setIsAuthenticated(true);
+      setTivoliAuthStatus("Authenticated with Tivoli");
+    } else if (process.env.NODE_ENV === 'development') {
+      // Auto-authenticate in development mode
+      setIsAuthenticated(true);
+      setTivoliAuthStatus("Development mode - auto authenticated");
+    } else {
+      setIsAuthenticated(false);
+      setTivoliAuthStatus("Waiting for authentication...");
+    }
+  }, []);
+  
+  // Handler for when JwtListener receives a token
+  const handleTokenReceived = (token: string) => {
+    console.log("Token received from JwtListener");
+    setIsAuthenticated(true);
+    setTivoliAuthStatus("Authenticated with Tivoli");
+  };
   
   // Replace your existing useEffect for token handling with this:
   useEffect(() => {
@@ -194,6 +217,7 @@ const TokenDebugger = () => {
 
   return (
     <div className="flex flex-col md:flex-row bg-gray-800 min-h-screen">
+      
       {/* Mobile */}
       <div className="md:hidden w-full">
         <div className="flex flex-col items-center p-4 bg-gray-800">
@@ -249,6 +273,7 @@ const TokenDebugger = () => {
 
       {/* Desktop */}
       <div className="hidden md:flex md:flex-row w-full">
+      <JwtListener onTokenReceived={handleTokenReceived} />
         <div className="flex flex-col w-1/2 items-center justify-center p-6 bg-gray-800 text-gray-100">
           <h1 className="text-4xl font-bold text-blue-400 mb-4">
             Wheel of Fortune
