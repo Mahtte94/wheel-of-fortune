@@ -9,6 +9,7 @@ import { segmentsData } from "./gameConstants";
 import { useEffect, useState } from "react";
 import { decodeJwt } from "./components/decodeUtil";
 import TivoliApiService from "./api/TivoliApiService";
+import { initJwtListener } from "./components/jwtHandler";
 
 //for deploy?
 interface MyTokenPayload {
@@ -22,6 +23,11 @@ export default function App() {
   const [segments] = useState(() => segmentsData);
 
   const [tivoliAuthStatus, setTivoliAuthStatus] = useState<string | null>(null);
+
+  useEffect(() => {
+    const cleanup = initJwtListener();
+    return cleanup;
+  }, []);
   
   // Replace your existing useEffect for token handling with this:
   useEffect(() => {
@@ -63,6 +69,21 @@ export default function App() {
         setTivoliAuthStatus("Not authenticated with Tivoli");
       }
     }
+    
+    // Listen for JWT received events
+    const handleJwtReceived = (event: CustomEvent) => {
+      console.log("JWT received event detected");
+      const token = event.detail;
+      const decoded = decodeJwt<MyTokenPayload>(token);
+      if (decoded) {
+        setTivoliAuthStatus("Authenticated with Tivoli");
+      }
+    };
+    
+    window.addEventListener('jwt_received', handleJwtReceived as EventListener);
+    return () => {
+      window.removeEventListener('jwt_received', handleJwtReceived as EventListener);
+    };
   }, []);
 
   const {
