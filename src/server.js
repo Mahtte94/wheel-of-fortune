@@ -18,6 +18,57 @@ app.use(cors({
 // Serve static files
 app.use(express.static('public'));
 
+// Add this to your server.js
+app.get('/api/users', async (req, res) => {
+  try {
+    const jwtHeader = req.headers.authorization;
+    const apiKey = process.env.TIVOLI_API_KEY;
+
+    if (!jwtHeader || !apiKey) {
+      return res.status(401).json({ error: "Missing auth info" });
+    }
+
+    const token = jwtHeader.replace(/^Bearer\s+/i, "");
+    
+    try {
+      const response = await fetch("https://yrgobanken.vip/api/users", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+          "x-api-key": apiKey
+        }
+      });
+
+      const responseText = await response.text();
+
+      let data;
+      try {
+        data = responseText ? JSON.parse(responseText) : [];
+      } catch {
+        return res.status(502).json({
+          error: "Invalid JSON response from Tivoli API",
+          raw: responseText
+        });
+      }
+
+      if (!response.ok) {
+        return res.status(response.status).json({
+          error: "Failed to fetch users",
+          details: data
+        });
+      }
+
+      return res.json(data);
+    } catch {
+      return res.status(503).json({ error: "Failed to connect to Tivoli API" });
+    }
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Unexpected error fetching users";
+    return res.status(500).json({ error: message });
+  }
+});
+
 // Transactions endpoint
 app.post('/api/transactions', async (req, res) => {
   try {
