@@ -5,8 +5,8 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      '/api': {
-        target: 'https://yrgobanken.vip',
+      "/api": {
+        target: "https://yrgobanken.vip",
         changeOrigin: true,
         secure: false,
       }
