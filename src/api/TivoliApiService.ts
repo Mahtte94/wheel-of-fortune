@@ -158,7 +158,6 @@ class TivoliApiService {
     try {
       console.log("Fetching user balance");
       
-      // Try the /api/users endpoint instead of /api/users/balance
       const response = await fetch(`${this.apiUrl}/api/users`, {
         method: HttpMethod.GET,
         headers: {

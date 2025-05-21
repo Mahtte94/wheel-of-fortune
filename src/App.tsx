@@ -21,17 +21,8 @@ interface MyTokenPayload {
 export default function App() {
   const [segments] = useState(() => segmentsData);
 
-  // useEffect(() => {
-  //   const testToken =
-  //   "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9." +
-  //   "eyJpc3MiOiJ5cmdvYmFua2VuLnZpcCIsInN1YiI6OSwiZW1haWwiOiJtYXR0ZV9oYWxvQGxpdmUuc2UiLCJpYXQiOjE3NDc3Njc5NDksImV4cCI6MTc0Nzc4MjM0OX0." +
-  //   "xa0vDJYaystfpk6k050O67YUh3IGSOasaYIVyX-8ikU";
-
-  //   const decoded = decodeJwt(testToken);
-  //   console.log("Decoded JWT for testing:", decoded);
-  // }, []);
   const [tivoliAuthStatus, setTivoliAuthStatus] = useState<string | null>(null);
-
+  
   // Replace your existing useEffect for token handling with this:
   useEffect(() => {
     // Check URL parameters for token from Tivoli
@@ -90,6 +81,7 @@ export default function App() {
     canAffordSpin,
     deductSpinCost,
     addMoney,
+    isBalanceLoading,
     addFreeSpin,
   } = useMoney();
 
@@ -135,7 +127,7 @@ export default function App() {
   }, [canAffordSpin, isSpinCycleActive]);
 
   const [tivoliBalance, setTivoliBalance] = useState<number | null>(null);
-  const [isBalanceLoading, setIsBalanceLoading] = useState<boolean>(false);
+ 
 
 
 
@@ -241,6 +233,12 @@ export default function App() {
           )}
 
           <GetApi />
+         
+<div className="mt-4 p-3 bg-gray-700 text-white rounded">
+  <p>Tivoli Auth Status: {tivoliAuthStatus || "Checking..."}</p>
+  <p>Token in localStorage: {localStorage.getItem("token") ? "Yes" : "No"}</p>
+  <p>Balance: {playerMoney !== null ? `$${playerMoney}` : "Not loaded"}</p>
+</div>
         </div>
       </div>
     </div>
