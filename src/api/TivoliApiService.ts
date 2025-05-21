@@ -30,12 +30,13 @@ interface BalanceResponse {
 
 class TivoliApiService {
   private readonly apiUrl: string;
-  private readonly apiKey: any;
+  private readonly apiKey: string;
 
   constructor() {
     // For development, you'd want to make these configurable or environment variables
     this.apiUrl = "https://yrgobanken.vip";
-    this.apiKey = "ba3810c3a695389235b63bb3a3c8eb1adbdd3197e09c4539b58e365f12bb4ca6;" // Replace with your actual API key from Tivoli
+    // Remove the semicolon at the end of your API key
+    this.apiKey = "ba3810c3a695389235b63bb3a3c8eb1adbdd3197e09c4539b58e365f12bb4ca6" 
   }
 
   /**
@@ -79,18 +80,21 @@ class TivoliApiService {
    * Fetch the user's current balance from Tivoli API
    * @returns Promise with the user's balance or null if error
    */
- 
+  async getUserBalance(): Promise<number | null> {
+    const token = localStorage.getItem("token");
+    
+    if (!token) {
+      console.error("No JWT token found");
+      return null;
+    }
 
-  /**
-   * Test the API connection
-   * @returns API response
-   */
-  async testApiConnection(): Promise<ApiResponse> {
     try {
-      const response = await fetch(`${this.apiUrl}/api/test`, {
+      const response = await fetch(`${this.apiUrl}/api/users/balance`, {
         method: HttpMethod.GET,
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+          "X-API-Key": this.apiKey
         }
       });
 
@@ -98,9 +102,47 @@ class TivoliApiService {
         throw new Error(`HTTP Error: ${response.status} ${response.statusText}`);
       }
 
+      const data = await response.json() as BalanceResponse;
+      return data.data.balance;
+    } catch (error) {
+      console.error("Error fetching user balance:", error);
+      return null;
+    }
+  }
+
+  /**
+   * Test the API connection
+   * @returns API response
+   */
+  async testApiConnection(): Promise<ApiResponse> {
+    try {
+      console.log("Testing API connection to:", `${this.apiUrl}/api/test`);
+      
+      const response = await fetch(`${this.apiUrl}/api/test`, {
+        method: HttpMethod.GET,
+        headers: {
+          "Content-Type": "application/json",
+          "X-API-Key": this.apiKey
+        }
+      });
+
+      console.log("API test response status:", response.status);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP Error: ${response.status} ${response.statusText}`);
+      }
+
       return await response.json() as ApiResponse;
     } catch (error) {
       console.error("Error testing API connection:", error);
+      
+      // More detailed error logging
+      if (error instanceof TypeError) {
+        console.error("This is likely a CORS or network connectivity issue");
+        console.error("Make sure your API URL is correct and accessible");
+        console.error("If deployed, ensure your domain is allowed by the API's CORS policy");
+      }
+      
       throw error;
     }
   }

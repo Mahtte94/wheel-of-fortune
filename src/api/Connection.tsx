@@ -1,17 +1,11 @@
 import { useState } from "react";
+import TivoliApiService from "./TivoliApiService"; // Import your service
 
 interface ApiResponse {
   readonly status: string;
   readonly message: string;
   readonly data?: unknown;
   readonly timestamp?: string;
-}
-
-enum HttpMethod {
-  GET = "GET",
-  POST = "POST",
-  PUT = "PUT",
-  DELETE = "DELETE",
 }
 
 type GetApiProps = {
@@ -22,33 +16,15 @@ const GetApi = ({}: GetApiProps = {}) => {
   const [result, setResult] = useState<string>("Click the button to test");
   const [loading, setLoading] = useState<boolean>(false);
 
-     const apiUrl: string = "/api/test";
-    // const apiUrl: string = "https://yrgobanken.vip/api/test";
-
   const testApi = async (): Promise<void> => {
     setLoading(true);
     setResult("Loading...");
 
     try {
-      const response: Response = await fetch(apiUrl, {
-        method: HttpMethod.GET,
-        headers: {
-          "Content-Type": "application/json",
-        } as const,
-      });
-
-      if (!response.ok) {
-        throw new Error(
-          `HTTP Error: ${response.status} ${response.statusText}`
-        );
-      }
-
-      const data: ApiResponse = (await response.json()) as ApiResponse;
-
-      const resultText: string = `Success! Status: ${
-        response.status
-      }\nData: ${JSON.stringify(data, null, 2)}`;
-
+      // Use the TivoliApiService for consistent API access
+      const data = await TivoliApiService.testApiConnection();
+      
+      const resultText: string = `Success! Status: 200\nData: ${JSON.stringify(data, null, 2)}`;
       setResult(resultText);
     } catch (error: unknown) {
       if (error instanceof Error) {
