@@ -34,7 +34,7 @@ class TivoliApiService {
 
   constructor() {
     // For development, you'd want to make these configurable or environment variables
-    this.apiUrl = "https://yrgobanken.vip";
+    this.apiUrl = "https://tivoli.yrgobanken.vip";
     this.apiKey = process.env.API_KEY; // Replace with your actual API key from Tivoli
   }
 
