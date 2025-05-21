@@ -90,8 +90,7 @@ class TivoliApiService {
       const response = await fetch(`${this.apiUrl}/api/test`, {
         method: HttpMethod.GET,
         headers: {
-          "Content-Type": "application/json",
-          "X-API-Key": this.apiKey
+          "Content-Type": "application/json"
         }
       });
 
