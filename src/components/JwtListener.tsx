@@ -30,11 +30,17 @@ export default function JwtListener({ onTokenReceived }: JwtListenerProps) {
 
     // Listen for messages from parent window
     const handleMessage = (event: MessageEvent) => {
+      // Get current origin
+      const currentOrigin = window.location.origin;
+      
       // Validate the origin for security
       const allowedOrigins = [
         'https://tivoli.yrgobanken.vip',
         'http://localhost:3000', // For local development
-        'http://127.0.0.1:3000'
+        'http://127.0.0.1:3000',
+        'http://localhost:5173', // Vite dev server
+        currentOrigin, // Allow messages from same origin
+        'https://wheel-of-fortune-lilac.vercel.app' // Your Vercel domain
       ];
       
       if (!allowedOrigins.includes(event.origin)) {
