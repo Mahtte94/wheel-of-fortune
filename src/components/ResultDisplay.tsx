@@ -2,14 +2,16 @@ type ResultDisplayProps = {
   resultMessage: string;
   winnings: number;
   outcomeType?: string;
+  apiError?: string | null; // Add the apiError prop
 };
 
 const ResultDisplay = ({
   resultMessage,
   winnings,
   outcomeType,
+  apiError,
 }: ResultDisplayProps) => {
-  if (!resultMessage) return null;
+  if (!resultMessage && !apiError) return null;
 
   const outcomeStyles: Record<string, string> = {
     JACKPOT: "text-yellow-200 bg-yellow-700 font-bold animate-pulse",
@@ -24,15 +26,25 @@ const ResultDisplay = ({
 
   return (
     <div className="space-y-2 w-full max-w-xs">
-      <p
-        className={`text-base md:text-xl text-center p-3 md:p-4 rounded-md shadow-lg font-semibold ${styleClass}`}
-      >
-        {resultMessage}
-      </p>
+      {resultMessage && (
+        <p
+          className={`text-base md:text-xl text-center p-3 md:p-4 rounded-md shadow-lg font-semibold ${styleClass}`}
+        >
+          {resultMessage}
+        </p>
+      )}
+      
       {winnings > 0 && (
         <p className="text-center text-green-400 font-bold">
           You won ${winnings}!
         </p>
+      )}
+
+      {/* Display Tivoli API error if present */}
+      {apiError && (
+        <div className="mt-2 p-3 bg-red-100 text-red-700 rounded-md text-sm font-medium text-center">
+          {apiError}
+        </div>
       )}
     </div>
   );

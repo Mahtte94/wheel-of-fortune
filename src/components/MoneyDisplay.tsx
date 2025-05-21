@@ -2,17 +2,28 @@ import React from "react";
 import { SPIN_COST } from "../gameConstants";
 
 type MoneyDisplayProps = {
-  playerMoney: number;
+  tivoliBalance: number | null;
+  isLoading: boolean;
   canAffordSpin: boolean;
 };
 
-const MoneyDisplay = ({ playerMoney, canAffordSpin }: MoneyDisplayProps) => {
+const MoneyDisplay = ({ 
+  tivoliBalance, 
+  isLoading, 
+  canAffordSpin 
+}: MoneyDisplayProps) => {
   return (
     <div className="w-full max-w-md">
       <div className="bg-gray-700 px-4 md:px-6 py-3 rounded-lg border-2 border-yellow-400">
         <div className="text-center">
-          <p className="text-sm text-gray-300">Your Money</p>
-          <p className="text-2xl font-bold text-yellow-400">${playerMoney}</p>
+          <p className="text-sm text-gray-300">Tivoli Balance</p>
+          {isLoading ? (
+            <p className="text-2xl font-bold text-yellow-400 animate-pulse">Loading...</p>
+          ) : tivoliBalance === null ? (
+            <p className="text-lg text-red-400">Not connected to Tivoli</p>
+          ) : (
+            <p className="text-2xl font-bold text-yellow-400">${tivoliBalance}</p>
+          )}
         </div>
         <div className="text-center mt-2">
           <p className="text-sm text-gray-400">Cost per spin: ${SPIN_COST}</p>

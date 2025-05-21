@@ -7,9 +7,72 @@ import ResultDisplay from "./components/ResultDisplay";
 import GetApi from "./api/Connection";
 import { segmentsData } from "./gameConstants";
 import { useEffect, useState } from "react";
+import { decodeJwt } from "./components/decodeUtil";
+import TivoliApiService from "./api/TivoliApiService";
+
+//for deploy?
+interface MyTokenPayload {
+  sub: string;
+  name: string;
+  exp: number;
+  [key: string]: any;
+}
 
 export default function App() {
   const [segments] = useState(() => segmentsData);
+
+  // useEffect(() => {
+  //   const testToken =
+  //   "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9." +
+  //   "eyJpc3MiOiJ5cmdvYmFua2VuLnZpcCIsInN1YiI6OSwiZW1haWwiOiJtYXR0ZV9oYWxvQGxpdmUuc2UiLCJpYXQiOjE3NDc3Njc5NDksImV4cCI6MTc0Nzc4MjM0OX0." +
+  //   "xa0vDJYaystfpk6k050O67YUh3IGSOasaYIVyX-8ikU";
+
+  //   const decoded = decodeJwt(testToken);
+  //   console.log("Decoded JWT for testing:", decoded);
+  // }, []);
+  const [tivoliAuthStatus, setTivoliAuthStatus] = useState<string | null>(null);
+
+  // Replace your existing useEffect for token handling with this:
+  useEffect(() => {
+    // Check URL parameters for token from Tivoli
+    const urlParams = new URLSearchParams(window.location.search);
+    const tokenFromUrl = urlParams.get("token");
+
+    if (tokenFromUrl) {
+      // Store token in localStorage
+      localStorage.setItem("token", tokenFromUrl);
+      const decoded = decodeJwt<MyTokenPayload>(tokenFromUrl);
+      if (decoded) {
+        console.log("Decoded JWT from Tivoli:", decoded);
+        setTivoliAuthStatus("Authenticated with Tivoli");
+      } else {
+        setTivoliAuthStatus("Invalid token from Tivoli");
+      }
+    } else {
+      // Check for existing token in localStorage
+      const token = localStorage.getItem("token");
+      if (token) {
+        const decoded = decodeJwt<MyTokenPayload>(token);
+        if (decoded) {
+          console.log("Using stored JWT:", decoded);
+
+          // Check if token is expired
+          const currentTime = Math.floor(Date.now() / 1000);
+          if (decoded.exp && decoded.exp < currentTime) {
+            setTivoliAuthStatus("Tivoli token expired. Please login again.");
+            localStorage.removeItem("token");
+          } else {
+            setTivoliAuthStatus("Authenticated with Tivoli");
+          }
+        } else {
+          setTivoliAuthStatus("Invalid stored token");
+          localStorage.removeItem("token");
+        }
+      } else {
+        setTivoliAuthStatus("Not authenticated with Tivoli");
+      }
+    }
+  }, []);
 
   const {
     angle,
@@ -30,18 +93,25 @@ export default function App() {
     addFreeSpin,
   } = useMoney();
 
-  const { resultMessage, gameCompleted, resetGame, outcomeType } = useGameLogic(
-    isSpinning,
-    winningSegmentIndex,
-    segmentsData,
-    addMoney,
-    addFreeSpin
-  );
+  const { resultMessage, gameCompleted, resetGame, outcomeType, apiError } =
+    useGameLogic(
+      isSpinning,
+      winningSegmentIndex,
+      segmentsData,
+      addMoney,
+      addFreeSpin
+    );
 
-  const handleSpinClick = () => {
+  const handleSpinClick = async () => {
     if (!canAffordSpin) return;
 
-    deductSpinCost();
+    // Since deductSpinCost now returns a Promise<boolean>, we need to await it
+    const spinDeducted = await deductSpinCost();
+    if (!spinDeducted) {
+      // If we couldn't deduct the spin cost, don't proceed with the spin
+      return;
+    }
+
     resetGame();
     spin();
     setTimeout(resetSpin, 5000);
@@ -64,6 +134,49 @@ export default function App() {
     };
   }, [canAffordSpin, isSpinCycleActive]);
 
+  const [tivoliBalance, setTivoliBalance] = useState<number | null>(null);
+  const [isBalanceLoading, setIsBalanceLoading] = useState<boolean>(false);
+
+  // Add this useEffect to fetch the Tivoli balance
+  useEffect(() => {
+    const fetchTivoliBalance = async () => {
+      if (!localStorage.getItem("token")) return;
+
+      setIsBalanceLoading(true);
+      try {
+        const balance = await TivoliApiService.getUserBalance();
+        setTivoliBalance(balance);
+      } catch (error) {
+        console.error("Failed to fetch Tivoli balance:", error);
+      } finally {
+        setIsBalanceLoading(false);
+      }
+    };
+
+    fetchTivoliBalance();
+
+    // Refresh the balance every 30 seconds
+    const intervalId = setInterval(fetchTivoliBalance, 30000);
+
+    return () => clearInterval(intervalId);
+  }, []);
+
+  // Add another useEffect to refresh balance after each win
+  useEffect(() => {
+    // If game completed and there was a winning outcome
+    if (gameCompleted && outcomeType && outcomeType !== "TRY AGAIN") {
+      // Wait a moment for the API transaction to process
+      setTimeout(async () => {
+        try {
+          const balance = await TivoliApiService.getUserBalance();
+          setTivoliBalance(balance);
+        } catch (error) {
+          console.error("Failed to refresh Tivoli balance after win:", error);
+        }
+      }, 1000);
+    }
+  }, [gameCompleted, outcomeType]);
+
   return (
     <div className="flex flex-col md:flex-row bg-gray-800 min-h-screen">
       {/* Mobile */}
@@ -84,8 +197,9 @@ export default function App() {
 
           <div className="mt-4 w-full flex justify-center">
             <MoneyDisplay
-              playerMoney={playerMoney}
+              tivoliBalance={playerMoney}
               canAffordSpin={canAffordSpin}
+              isLoading={isBalanceLoading}
             />
           </div>
 
@@ -104,7 +218,11 @@ export default function App() {
           </div>
 
           <div className="mt-6 w-full flex justify-center">
-            <ResultDisplay resultMessage={resultMessage} winnings={0} />
+            <ResultDisplay
+              resultMessage={resultMessage}
+              winnings={0}
+              apiError={apiError}
+            />
           </div>
 
           <div className="mt-4">
@@ -121,9 +239,10 @@ export default function App() {
           </h1>
 
           <MoneyDisplay
-            playerMoney={playerMoney}
-            canAffordSpin={canAffordSpin}
-          />
+              tivoliBalance={playerMoney}
+              canAffordSpin={canAffordSpin}
+              isLoading={isBalanceLoading}
+            />
 
           <div className="mt-4">
             <button
@@ -144,6 +263,7 @@ export default function App() {
               resultMessage={resultMessage}
               winnings={0}
               outcomeType={outcomeType}
+              apiError={apiError}
             />
           </div>
         </div>
