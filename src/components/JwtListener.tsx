@@ -1,6 +1,7 @@
 // src/components/JwtListener.tsx
 import { useEffect } from "react";
 
+// Define the props interface with proper typing
 interface JwtListenerProps {
   onTokenReceived?: (token: string) => void;
 }
@@ -29,6 +30,18 @@ export default function JwtListener({ onTokenReceived }: JwtListenerProps) {
 
     // Listen for messages from parent window
     const handleMessage = (event: MessageEvent) => {
+      // Validate the origin for security
+      const allowedOrigins = [
+        'https://tivoli.yrgobanken.vip',
+        'http://localhost:3000', // For local development
+        'http://127.0.0.1:3000'
+      ];
+      
+      if (!allowedOrigins.includes(event.origin)) {
+        console.log('Message from unauthorized origin:', event.origin);
+        return;
+      }
+      
       const data = event.data;
       
       // Filter out React DevTools and other unwanted messages
@@ -40,7 +53,7 @@ export default function JwtListener({ onTokenReceived }: JwtListenerProps) {
         }
       }
       
-      console.log("Received relevant message:", data);
+      console.log("Received relevant message from", event.origin, ":", data);
       let jwt: string | null = null;
 
       // Check different formats the token might come in
@@ -59,7 +72,7 @@ export default function JwtListener({ onTokenReceived }: JwtListenerProps) {
         // Dispatch event for other components
         window.dispatchEvent(new CustomEvent("token_received", { detail: jwt }));
         
-        // Call callback if provided
+        // Call callback if provided - THIS IS THE KEY FIX
         if (onTokenReceived) {
           onTokenReceived(jwt);
         }
@@ -84,7 +97,7 @@ export default function JwtListener({ onTokenReceived }: JwtListenerProps) {
       window.removeEventListener("message", handleMessage);
       clearTimeout(timeout);
     };
-  }, [onTokenReceived]);
+  }, [onTokenReceived]); // Add onTokenReceived to dependency array
 
   return null;
 }

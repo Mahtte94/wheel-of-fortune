@@ -27,10 +27,10 @@ const TestModePrompt = ({ onEnableTestMode }: { onEnableTestMode: () => void }) 
       
       <div className="space-y-4">
         <a 
-          href="https://tivoli.yrgobanken.vip"
+          href="https://tivoli.yrgobanken.vip/dashboard"
           className="px-6 py-3 bg-blue-500 text-white text-lg rounded hover:bg-blue-600 inline-block w-full"
         >
-          Go to Tivoli
+          Go to Tivoli Dashboard
         </a>
         
         {process.env.NODE_ENV === 'development' && (
