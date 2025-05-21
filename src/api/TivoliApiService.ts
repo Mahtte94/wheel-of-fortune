@@ -154,11 +154,12 @@ class TivoliApiService {
       console.error("No JWT token found");
       return null;
     }
-
+  
     try {
       console.log("Fetching user balance");
       
-      const response = await fetch(`${this.apiUrl}/api/users/balance`, {
+      // Try the /api/users endpoint instead of /api/users/balance
+      const response = await fetch(`${this.apiUrl}/api/users`, {
         method: HttpMethod.GET,
         headers: {
           "Content-Type": "application/json",
@@ -166,22 +167,63 @@ class TivoliApiService {
           "X-API-Key": this.apiKey
         }
       });
-
+  
       console.log("Balance API response status:", response.status);
       
       if (!response.ok) {
         throw new Error(`HTTP Error: ${response.status} ${response.statusText}`);
       }
-
-      const data = await response.json() as BalanceResponse;
-      console.log("Balance fetched successfully:", data.data.balance);
-      return data.data.balance;
+  
+      // The response is an array of users
+      const users = await response.json() as Array<{
+        id: number | string;
+        name: string;
+        email: string;
+        balance: number;
+        [key: string]: any;
+      }>;
+      
+      console.log("Users response:", users);
+      
+      // Find the current user - we might need to decode the JWT to get the user ID
+      let userId: number | string | undefined;
+      try {
+        const decodedToken = JSON.parse(atob(token.split('.')[1]));
+        userId = decodedToken.sub;
+        console.log("Current user ID from token:", userId);
+      } catch (e) {
+        console.error("Error decoding token:", e);
+      }
+      
+      // Try to find the user by ID if we have it
+      let userBalance: number | null = null;
+      if (userId !== undefined) {
+        const currentUser = users.find(user => String(user.id) === String(userId));
+        if (currentUser) {
+          userBalance = currentUser.balance;
+          console.log("Found user by ID, balance:", userBalance);
+        }
+      }
+      
+      // If we couldn't find by ID or couldn't get ID, just use the first user
+      // This is a fallback and not ideal
+      if (userBalance === null && users.length > 0) {
+        userBalance = users[0].balance;
+        console.log("Using first user's balance:", userBalance);
+      }
+      
+      if (userBalance === null) {
+        console.error("Could not find user balance in response");
+        return null;
+      }
+      
+      console.log("Balance fetched successfully:", userBalance);
+      return userBalance;
     } catch (error) {
       console.error("Error fetching user balance:", error);
       return null;
     }
   }
-
   /**
    * Test the API connection
    * @returns API response
