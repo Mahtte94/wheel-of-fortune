@@ -29,61 +29,90 @@ export default function JwtListener({ onTokenReceived }: JwtListenerProps) {
     }
 
     // Listen for messages from parent window
-    const handleMessage = (event: MessageEvent) => {
-      // Get current origin
-      const currentOrigin = window.location.origin;
-      
-      // Validate the origin for security
-      const allowedOrigins = [
-        'https://tivoli.yrgobanken.vip',
-        'http://localhost:3000', // For local development
-        'http://127.0.0.1:3000',
-        'http://localhost:5173', // Vite dev server
-        currentOrigin, // Allow messages from same origin
-        'https://wheel-of-fortune-lilac.vercel.app' // Your Vercel domain
-      ];
-      
-      if (!allowedOrigins.includes(event.origin)) {
-        console.log('Message from unauthorized origin:', event.origin);
-        return;
-      }
-      
-      const data = event.data;
-      
-      // Filter out React DevTools and other unwanted messages
-      if (data && typeof data === "object") {
-        if (data.source === "react-devtools-content-script" || 
-            data.source === "react-devtools-bridge" ||
-            data.source === "react-devtools-detector") {
-          return; // Ignore React DevTools messages
-        }
-      }
-      
-      console.log("Received relevant message from", event.origin, ":", data);
-      let jwt: string | null = null;
+    // In your JwtListener.tsx, update the handleMessage function:
+const handleMessage = (event: MessageEvent) => {
+  const data = event.data;
+  
+  // More comprehensive filtering of unwanted messages
+  if (data && typeof data === "object") {
+    // Filter out all React DevTools related messages
+    if (data.source && (
+        data.source.includes("react-devtools") ||
+        data.source === "react-devtools-content-script" ||
+        data.source === "react-devtools-bridge" ||
+        data.source === "react-devtools-detector" ||
+        data.source === "react-devtools-backend-manager"
+      )) {
+      return; // Ignore all React DevTools messages
+    }
+    
+    // Filter out Vercel-specific messages
+    if (event.origin === "https://vercel.live") {
+      return; // Ignore Vercel preview environment messages
+    }
+    
+    // Filter out other development/debugging messages
+    if (data === "get-draft-status" || 
+        (typeof data === "string" && data.includes("draft"))) {
+      return; // Ignore Vercel draft status messages
+    }
+  }
+  
+  // Get current origin
+  const currentOrigin = window.location.origin;
+  
+  // Validate the origin for security
+  const allowedOrigins = [
+    'https://tivoli.yrgobanken.vip',
+    currentOrigin, // Allow messages from same origin
+  ];
+  
+  // In development, be more permissive
+  if (process.env.NODE_ENV === 'development') {
+    allowedOrigins.push(
+      'http://localhost:3000',
+      'http://127.0.0.1:3000',
+      'http://localhost:5173'
+    );
+  }
+  
+  if (!allowedOrigins.includes(event.origin)) {
+    // Only log this occasionally to avoid spam
+    if (Math.random() < 0.1) { // Log only 10% of unauthorized messages
+      console.log('Message from unauthorized origin:', event.origin);
+    }
+    return;
+  }
+  
+  // Only log meaningful messages
+  if (data && typeof data === "object" && (data.jwt || data.token || data.type === "JWT_TOKEN")) {
+    console.log("Received relevant message from", event.origin, ":", data);
+  }
+  
+  let jwt: string | null = null;
 
-      // Check different formats the token might come in
-      if (typeof data === "object") {
-        if (data.jwt) jwt = data.jwt;
-        else if (data.token) jwt = data.token;
-        else if (data.type === "JWT_TOKEN" && data.token) jwt = data.token;
-      } else if (typeof data === "string" && data.startsWith("eyJ")) {
-        jwt = data;
-      }
+  // Check different formats the token might come in
+  if (typeof data === "object") {
+    if (data.jwt) jwt = data.jwt;
+    else if (data.token) jwt = data.token;
+    else if (data.type === "JWT_TOKEN" && data.token) jwt = data.token;
+  } else if (typeof data === "string" && data.startsWith("eyJ")) {
+    jwt = data;
+  }
 
-      if (jwt && typeof jwt === "string" && jwt.startsWith("eyJ")) {
-        console.log("JWT token received, saving to localStorage");
-        localStorage.setItem("token", jwt);
-        
-        // Dispatch event for other components
-        window.dispatchEvent(new CustomEvent("token_received", { detail: jwt }));
-        
-        // Call callback if provided - THIS IS THE KEY FIX
-        if (onTokenReceived) {
-          onTokenReceived(jwt);
-        }
-      }
-    };
+  if (jwt && typeof jwt === "string" && jwt.startsWith("eyJ")) {
+    console.log("JWT token received, saving to localStorage");
+    localStorage.setItem("token", jwt);
+    
+    // Dispatch event for other components
+    window.dispatchEvent(new CustomEvent("token_received", { detail: jwt }));
+    
+    // Call callback if provided
+    if (onTokenReceived) {
+      onTokenReceived(jwt);
+    }
+  }
+};
 
     window.addEventListener("message", handleMessage);
 

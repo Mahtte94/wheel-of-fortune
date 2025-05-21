@@ -16,35 +16,8 @@ interface MyTokenPayload {
   [key: string]: any;
 }
 
-// Test Mode Prompt Component
-const TestModePrompt = ({ onEnableTestMode }: { onEnableTestMode: () => void }) => {
-  return (
-    <div className="bg-gray-800 text-white p-6 rounded-lg max-w-md mx-auto text-center">
-      <h2 className="text-2xl font-bold mb-4">Game Access</h2>
-      <p className="mb-4">
-        This game should be launched from the Tivoli website.
-      </p>
-      
-      <div className="space-y-4">
-        <a 
-          href="https://tivoli.yrgobanken.vip/dashboard"
-          className="px-6 py-3 bg-blue-500 text-white text-lg rounded hover:bg-blue-600 inline-block w-full"
-        >
-          Go to Tivoli Dashboard
-        </a>
-        
-        {process.env.NODE_ENV === 'development' && (
-          <button 
-            onClick={onEnableTestMode}
-            className="px-6 py-3 bg-orange-600 text-white text-lg rounded hover:bg-orange-500 inline-block w-full"
-          >
-            Enable Test Mode (Dev Only)
-          </button>
-        )}
-      </div>
-    </div>
-  );
-};
+
+
 
 // Token Debug Component
 const TokenDebugger = () => {
@@ -266,15 +239,7 @@ export default function App() {
       <JwtListener onTokenReceived={handleTokenReceived} />
 
       {/* Authentication States */}
-      {isAuthenticated === false ? (
-        <div className="w-full flex items-center justify-center p-4">
-          <TestModePrompt onEnableTestMode={handleEnableTestMode} />
-        </div>
-      ) : isAuthenticated === null ? (
-        <div className="w-full flex items-center justify-center p-4">
-          <p className="text-white text-xl">Checking authentication...</p>
-        </div>
-      ) : (
+      
         <>
           {/* Mobile Layout */}
           <div className="md:hidden w-full">
@@ -379,7 +344,7 @@ export default function App() {
             </div>
           </div>
         </>
-      )}
+      
     </div>
   );
 }
