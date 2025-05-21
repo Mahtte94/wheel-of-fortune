@@ -1,4 +1,5 @@
-// TivoliApiService.ts
+
+import { buyTicket, awardStamp } from './transactionService';
 enum HttpMethod {
   GET = "GET",
   POST = "POST",
@@ -76,6 +77,8 @@ class TivoliApiService {
     });
   }
 
+  
+
   /**
    * Report winnings (pay the user)
    * @param amount The amount the user won
@@ -95,7 +98,7 @@ class TivoliApiService {
    * @param transaction The transaction data
    * @returns API response
    */
-  private async sendTransaction(transaction: TransactionRequest): Promise<ApiResponse> {
+   async sendTransaction(transaction: TransactionRequest): Promise<ApiResponse> {
     const token = localStorage.getItem("token");
     
     if (!token) {
@@ -223,6 +226,23 @@ class TivoliApiService {
       return null;
     }
   }
+
+  static async reportSpin(cost: number): Promise<void> {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('No auth token available');
+    
+    // Use buyTicket from transactionService
+    return buyTicket(token);
+  }
+  
+  static async reportWinnings(amount: number): Promise<void> {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('No auth token available');
+    
+    // Use awardStamp from transactionService
+    return awardStamp(token);
+  }
+
   /**
    * Test the API connection
    * @returns API response
@@ -278,6 +298,10 @@ class TivoliApiService {
       return this.reportWinnings(amount);
     }
   }
+
+  
 }
+
+
 
 export default new TivoliApiService();

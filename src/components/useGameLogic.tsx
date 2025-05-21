@@ -54,15 +54,13 @@ export function useGameLogic(
 
   const reportResultToTivoliApi = async (amount: number) => {
     try {
-      // Only report positive winnings to the API
       if (amount > 0) {
-        // Use the new reportWinnings method that now expects just the amount
         await TivoliApiService.reportWinnings(amount);
       }
       setApiError(null);
     } catch (error) {
       console.error("Failed to report game result to Tivoli API", error);
-      setApiError("Failed to report winnings. Please try again later.");
+      setApiError(error instanceof Error ? error.message : "Failed to report winnings");
     }
   };
 

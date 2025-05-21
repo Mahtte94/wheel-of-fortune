@@ -44,10 +44,10 @@ export function useMoney() {
       return true;
     } else if (tivoliBalance !== null && tivoliBalance >= SPIN_COST) {
       try {
-        // Report the spin cost using the new reportSpin method
+        // This now uses the transactionService under the hood
         await TivoliApiService.reportSpin(SPIN_COST);
         
-        // Update the balance
+        // Update the balance after transaction
         const newBalance = await TivoliApiService.getUserBalance();
         setTivoliBalance(newBalance);
         
@@ -55,7 +55,7 @@ export function useMoney() {
         return true;
       } catch (error) {
         console.error("Error deducting spin cost:", error);
-        setApiError("Failed to process spin. Please try again.");
+        setApiError(error instanceof Error ? error.message : "Failed to process spin");
         return false;
       }
     }
@@ -65,10 +65,10 @@ export function useMoney() {
   // Add money by reporting a win to Tivoli API
   const addMoney = useCallback(async (amount: number) => {
     try {
-      // Report the win using the new reportWinnings method
+      // This now uses the transactionService under the hood
       await TivoliApiService.reportWinnings(amount);
       
-      // Update the balance
+      // Update the balance after transaction
       const newBalance = await TivoliApiService.getUserBalance();
       setTivoliBalance(newBalance);
       
@@ -76,7 +76,7 @@ export function useMoney() {
       return true;
     } catch (error) {
       console.error("Error adding money:", error);
-      setApiError("Failed to process winnings. Please contact support.");
+      setApiError(error instanceof Error ? error.message : "Failed to process winnings");
       return false;
     }
   }, []);
