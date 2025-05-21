@@ -34,7 +34,7 @@ class TivoliApiService {
 
   constructor() {
     // For development, you'd want to make these configurable or environment variables
-    this.apiUrl = "https://yrgobanken.vip/api";
+    this.apiUrl = "https://yrgobanken.vip";
     this.apiKey = "ba3810c3a695389235b63bb3a3c8eb1adbdd3197e09c4539b58e365f12bb4ca6"; // Replace with your actual API key from Tivoli
   }
 
@@ -51,7 +51,7 @@ class TivoliApiService {
     }
 
     try {
-      const response = await fetch(`${this.apiUrl}/transactions`, {
+      const response = await fetch(`${this.apiUrl}/api/transactions`, {
         method: HttpMethod.POST,
         headers: {
           "Content-Type": "application/json",
@@ -88,7 +88,7 @@ class TivoliApiService {
     }
 
     try {
-      const response = await fetch(`${this.apiUrl}/users/balance`, {
+      const response = await fetch(`${this.apiUrl}/api/users/balance`, {
         method: HttpMethod.GET,
         headers: {
           "Content-Type": "application/json",
