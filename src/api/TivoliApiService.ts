@@ -46,7 +46,7 @@ class TivoliApiService {
       window.location.hostname === "127.0.0.1";
     
     // Use the same API URL for both environments, since CORS is configured for localhost:5173
-    this.apiUrl = "https://yrgobanken.vip";
+    this.apiUrl = "";
     this.apiKey = "ba3810c3a695389235b63bb3a3c8eb1adbdd3197e09c4539b58e365f12bb4ca6"; 
     
     // Your amusement and group IDs - replace with your actual values
