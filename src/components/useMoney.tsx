@@ -9,7 +9,30 @@ export function useMoney() {
   const [apiError, setApiError] = useState<string | null>(null);
 
   // Fetch Tivoli balance on component mount and periodically
- 
+  useEffect(() => {
+    const fetchTivoliBalance = async () => {
+      if (!localStorage.getItem("token")) return;
+      
+      setIsBalanceLoading(true);
+      try {
+        const balance = await TivoliApiService.getUserBalance();
+        setTivoliBalance(balance);
+        setApiError(null);
+      } catch (error) {
+        console.error("Failed to fetch Tivoli balance:", error);
+        setApiError("Failed to connect to Tivoli");
+      } finally {
+        setIsBalanceLoading(false);
+      }
+    };
+
+    fetchTivoliBalance();
+    
+    // Refresh the balance every 30 seconds
+    const intervalId = setInterval(fetchTivoliBalance, 30000);
+    
+    return () => clearInterval(intervalId);
+  }, []);
 
   // Determine if the player can afford a spin
   const canAffordSpin = (tivoliBalance !== null && tivoliBalance >= SPIN_COST) || freeSpins > 0;
@@ -21,13 +44,12 @@ export function useMoney() {
       return true;
     } else if (tivoliBalance !== null && tivoliBalance >= SPIN_COST) {
       try {
-        // Report the spin cost as a negative transaction
-        await TivoliApiService.reportGameResult({
-          amount: -SPIN_COST,
-          outcomeType: "SPIN"
-        });
+        // Report the spin cost using the new reportSpin method
+        await TivoliApiService.reportSpin(SPIN_COST);
         
         // Update the balance
+        const newBalance = await TivoliApiService.getUserBalance();
+        setTivoliBalance(newBalance);
         
         setApiError(null);
         return true;
@@ -43,13 +65,12 @@ export function useMoney() {
   // Add money by reporting a win to Tivoli API
   const addMoney = useCallback(async (amount: number) => {
     try {
-      // Report the win as a positive transaction
-      await TivoliApiService.reportGameResult({
-        amount: amount,
-        outcomeType: "WIN"
-      });
+      // Report the win using the new reportWinnings method
+      await TivoliApiService.reportWinnings(amount);
       
       // Update the balance
+      const newBalance = await TivoliApiService.getUserBalance();
+      setTivoliBalance(newBalance);
       
       setApiError(null);
       return true;

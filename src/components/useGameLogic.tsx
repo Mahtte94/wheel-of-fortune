@@ -45,21 +45,19 @@ export function useGameLogic(
       
       // Report result to Tivoli API if there's a payout
       if (payout > 0) {
-        reportResultToTivoliApi(payout, outcomeTypeValue);
+        reportResultToTivoliApi(payout);
       }
 
       setGameCompleted(true);
     }
   }, [isSpinning, winningSegmentIndex, segments, addMoney, addFreeSpin]);
 
-  const reportResultToTivoliApi = async (amount: number, type: string) => {
+  const reportResultToTivoliApi = async (amount: number) => {
     try {
       // Only report positive winnings to the API
       if (amount > 0) {
-        await TivoliApiService.reportGameResult({
-          amount: amount,
-          outcomeType: type
-        });
+        // Use the new reportWinnings method that now expects just the amount
+        await TivoliApiService.reportWinnings(amount);
       }
       setApiError(null);
     } catch (error) {

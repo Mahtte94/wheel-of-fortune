@@ -13,9 +13,13 @@ interface ApiResponse {
   readonly timestamp?: string;
 }
 
-interface GameResult {
-  amount: number;
-  outcomeType: string;
+// Updated to match the Tivoli API format
+interface TransactionRequest {
+  amusement_id: number;
+  group_id: number;
+  stake_amount?: number | null;
+  payout_amount?: number | null;
+  stamp_id?: number | null;
 }
 
 interface BalanceResponse {
@@ -31,20 +35,67 @@ interface BalanceResponse {
 class TivoliApiService {
   private readonly apiUrl: string;
   private readonly apiKey: string;
+  private readonly isDevelopment: boolean;
+  private readonly amusementId: number;
+  private readonly groupId: number;
 
   constructor() {
-    // For development, you'd want to make these configurable or environment variables
+    // Detect if we're in development or production
+    this.isDevelopment = 
+      window.location.hostname === "localhost" || 
+      window.location.hostname === "127.0.0.1";
+    
+    // Use the same API URL for both environments, since CORS is configured for localhost:5173
     this.apiUrl = "https://yrgobanken.vip";
-    // Remove the semicolon at the end of your API key
-    this.apiKey = "ba3810c3a695389235b63bb3a3c8eb1adbdd3197e09c4539b58e365f12bb4ca6" 
+    this.apiKey = "ba3810c3a695389235b63bb3a3c8eb1adbdd3197e09c4539b58e365f12bb4ca6"; 
+    
+    // Your amusement and group IDs - replace with your actual values
+    this.amusementId = 7; // Replace with your actual amusement ID
+    this.groupId = 6;     // Replace with your actual group ID
+    
+    // Log the environment for debugging
+    if (this.isDevelopment) {
+      console.log("TivoliApiService initialized in DEVELOPMENT mode (localhost:5173)");
+    } else {
+      console.log("TivoliApiService initialized in PRODUCTION mode");
+    }
+    console.log("Using API URL:", this.apiUrl);
   }
 
   /**
-   * Send a game result to the Tivoli API
-   * @param result The game result to report
+   * Report a spin (charge the user for playing)
+   * @param amount The cost of the spin
    * @returns API response
    */
-  async reportGameResult(result: GameResult): Promise<ApiResponse> {
+  async reportSpin(amount: number): Promise<ApiResponse> {
+    return this.sendTransaction({
+      amusement_id: this.amusementId,
+      group_id: this.groupId,
+      stake_amount: amount,
+      payout_amount: null
+    });
+  }
+
+  /**
+   * Report winnings (pay the user)
+   * @param amount The amount the user won
+   * @returns API response
+   */
+  async reportWinnings(amount: number): Promise<ApiResponse> {
+    return this.sendTransaction({
+      amusement_id: this.amusementId,
+      group_id: this.groupId,
+      stake_amount: null,
+      payout_amount: amount
+    });
+  }
+
+  /**
+   * Send a transaction to the Tivoli API
+   * @param transaction The transaction data
+   * @returns API response
+   */
+  private async sendTransaction(transaction: TransactionRequest): Promise<ApiResponse> {
     const token = localStorage.getItem("token");
     
     if (!token) {
@@ -52,6 +103,8 @@ class TivoliApiService {
     }
 
     try {
+      console.log("Sending transaction:", transaction);
+      
       const response = await fetch(`${this.apiUrl}/api/transactions`, {
         method: HttpMethod.POST,
         headers: {
@@ -59,19 +112,33 @@ class TivoliApiService {
           "Authorization": `Bearer ${token}`,
           "X-API-Key": this.apiKey
         },
-        body: JSON.stringify({
-          amount: result.amount,
-          type: result.outcomeType
-        })
+        body: JSON.stringify(transaction)
       });
 
+      console.log("Transaction API response status:", response.status);
+      
       if (!response.ok) {
-        throw new Error(`HTTP Error: ${response.status} ${response.statusText}`);
+        // Try to get error details
+        let errorMessage = `HTTP Error: ${response.status} ${response.statusText}`;
+        
+        try {
+          const errorData = await response.json();
+          console.error("API error details:", errorData);
+          if (errorData.message) {
+            errorMessage = errorData.message;
+          }
+        } catch {
+          // If we can't parse the error response, just use the status
+        }
+        
+        throw new Error(errorMessage);
       }
 
-      return await response.json() as ApiResponse;
+      const responseData = await response.json() as ApiResponse;
+      console.log("Transaction successful:", responseData);
+      return responseData;
     } catch (error) {
-      console.error("Error reporting game result:", error);
+      console.error("Error sending transaction:", error);
       throw error;
     }
   }
@@ -89,6 +156,8 @@ class TivoliApiService {
     }
 
     try {
+      console.log("Fetching user balance");
+      
       const response = await fetch(`${this.apiUrl}/api/users/balance`, {
         method: HttpMethod.GET,
         headers: {
@@ -98,11 +167,14 @@ class TivoliApiService {
         }
       });
 
+      console.log("Balance API response status:", response.status);
+      
       if (!response.ok) {
         throw new Error(`HTTP Error: ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json() as BalanceResponse;
+      console.log("Balance fetched successfully:", data.data.balance);
       return data.data.balance;
     } catch (error) {
       console.error("Error fetching user balance:", error);
@@ -116,9 +188,10 @@ class TivoliApiService {
    */
   async testApiConnection(): Promise<ApiResponse> {
     try {
-      console.log("Testing API connection to:", `${this.apiUrl}/api/test`);
+      const testUrl = `${this.apiUrl}/api/test`;
+      console.log("Testing API connection to:", testUrl);
       
-      const response = await fetch(`${this.apiUrl}/api/test`, {
+      const response = await fetch(testUrl, {
         method: HttpMethod.GET,
         headers: {
           "Content-Type": "application/json",
@@ -140,10 +213,28 @@ class TivoliApiService {
       if (error instanceof TypeError) {
         console.error("This is likely a CORS or network connectivity issue");
         console.error("Make sure your API URL is correct and accessible");
-        console.error("If deployed, ensure your domain is allowed by the API's CORS policy");
+        
+        if (this.isDevelopment) {
+          console.error("For local development, make sure you're running on port 5173 (Vite default)");
+          console.error("Current origin:", window.location.origin);
+        } else {
+          console.error("For production, ensure your domain is allowed by the API's CORS policy");
+        }
       }
       
       throw error;
+    }
+  }
+  
+  /**
+   * Debug method to test a direct transaction
+   * This is just for testing and debugging
+   */
+  async testTransaction(isSpin: boolean, amount: number): Promise<ApiResponse> {
+    if (isSpin) {
+      return this.reportSpin(amount);
+    } else {
+      return this.reportWinnings(amount);
     }
   }
 }
