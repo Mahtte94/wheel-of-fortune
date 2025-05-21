@@ -34,8 +34,8 @@ class TivoliApiService {
 
   constructor() {
     // For development, you'd want to make these configurable or environment variables
-    this.apiUrl = "https://tivoli.yrgobanken.vip";
-    this.apiKey = process.env.API_KEY; // Replace with your actual API key from Tivoli
+    this.apiUrl = "https://yrgobanken.vip";
+    this.apiKey = "ba3810c3a695389235b63bb3a3c8eb1adbdd3197e09c4539b58e365f12bb4ca6;" // Replace with your actual API key from Tivoli
   }
 
   /**
@@ -87,7 +87,7 @@ class TivoliApiService {
    */
   async testApiConnection(): Promise<ApiResponse> {
     try {
-      const response = await fetch(`${this.apiUrl}/test`, {
+      const response = await fetch(`${this.apiUrl}/api/test`, {
         method: HttpMethod.GET,
         headers: {
           "Content-Type": "application/json",
