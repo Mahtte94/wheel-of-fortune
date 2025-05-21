@@ -130,7 +130,20 @@ export default function App() {
   const [tivoliBalance, setTivoliBalance] = useState<number | null>(null);
  
 
-
+  const TivoliAuthPrompt = () => {
+    return (
+      <div className="bg-gray-700 text-white p-6 rounded-lg max-w-md mx-auto text-center">
+        <h2 className="text-2xl font-bold mb-4">Authentication Required</h2>
+        <p className="mb-4">To play this game, you need to log in through Tivoli.</p>
+        <a 
+          href="https://tivoli.yrgobanken.vip"
+          className="px-6 py-3 bg-blue-500 text-white text-lg rounded hover:bg-blue-600 inline-block"
+        >
+          Log in with Tivoli
+        </a>
+      </div>
+    );
+  };
 
 
 

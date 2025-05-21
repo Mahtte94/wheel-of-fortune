@@ -1,51 +1,49 @@
-type ResultDisplayProps = {
+// Define the props interface
+interface ResultDisplayProps {
   resultMessage: string;
   winnings: number;
-  outcomeType?: string;
-  apiError?: string | null; // Add the apiError prop
-};
+  apiError: string | null;
+  outcomeType?: string; // Optional since it might not always be provided
+}
 
-const ResultDisplay = ({
-  resultMessage,
-  winnings,
-  outcomeType,
-  apiError,
-}: ResultDisplayProps) => {
-  if (!resultMessage && !apiError) return null;
-
-  const outcomeStyles: Record<string, string> = {
-    JACKPOT: "text-yellow-200 bg-yellow-700 font-bold animate-pulse",
-    "2X WIN": "text-green-100 bg-green-600 font-semibold",
-    "FREE SPIN": "text-blue-100 bg-blue-600 font-semibold",
-    "TRY AGAIN": "text-red-100 bg-red-700",
-  };
-
-  const styleClass = outcomeType
-    ? outcomeStyles[outcomeType] ?? "text-white"
-    : "text-white";
-
+// Update the component with proper TypeScript typing
+const ResultDisplay: React.FC<ResultDisplayProps> = ({ 
+  resultMessage, 
+  winnings, 
+  apiError, 
+  outcomeType 
+}) => {
+  // First, determine if this is an authentication error
+  const isAuthError = apiError && (
+    apiError.includes("Authentication required") || 
+    apiError.includes("auth token")
+  );
+  
   return (
-    <div className="space-y-2 w-full max-w-xs">
-      {resultMessage && (
-        <p
-          className={`text-base md:text-xl text-center p-3 md:p-4 rounded-md shadow-lg font-semibold ${styleClass}`}
-        >
-          {resultMessage}
-        </p>
-      )}
-      
-      {winnings > 0 && (
-        <p className="text-center text-green-400 font-bold">
-          You won ${winnings}!
-        </p>
-      )}
-
-      {/* Display Tivoli API error if present */}
-      {apiError && (
-        <div className="mt-2 p-3 bg-red-100 text-red-700 rounded-md text-sm font-medium text-center">
-          {apiError}
+    <div className="w-full max-w-md">
+      {isAuthError ? (
+        <div className="bg-red-700 text-white px-4 py-4 rounded-lg text-center">
+          <p className="mb-2">{apiError}</p>
+          <a 
+            href="https://tivoli.yrgobanken.vip"
+            className="px-4 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-600 inline-block mt-2"
+          >
+            Log in
+          </a>
         </div>
-      )}
+      ) : apiError ? (
+        <div className="bg-red-700 text-white px-4 py-3 rounded-lg">
+          <p className="text-center">{apiError}</p>
+        </div>
+      ) : resultMessage ? (
+        <div className={`px-4 py-3 rounded-lg text-white text-center text-xl ${
+          outcomeType === "JACKPOT" ? "bg-yellow-600 animate-pulse" :
+          outcomeType === "2X_WIN" ? "bg-green-600" :
+          outcomeType === "FREE_SPIN" ? "bg-blue-600" : "bg-gray-700"
+        }`}>
+          {resultMessage}
+        </div>
+      ) : null}
     </div>
   );
 };
