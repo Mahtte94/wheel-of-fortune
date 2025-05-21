@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { SPIN_COST, WIN_MULTIPLIER } from "../gameConstants";
+import { GAME_CONFIG } from "../context/gameConfig";
 import TivoliApiService from "../api/TivoliApiService";
 
 type Segment = { label: string | number; color: string };
@@ -23,14 +23,14 @@ export function useGameLogic(
       let outcomeTypeValue = "";
 
       if (result === "JACKPOT") {
-        payout = SPIN_COST * WIN_MULTIPLIER;
+        payout = GAME_CONFIG.COST * GAME_CONFIG.JACKPOT_MULTIPLIER;
         addMoney(payout);
-        setResultMessage(`JACKPOT! You win $${payout}!`);
+        setResultMessage(`JACKPOT! You win ${GAME_CONFIG.CURRENCY}${payout}!`);
         outcomeTypeValue = "JACKPOT";
       } else if (result === "2X WIN") {
-        payout = SPIN_COST * 2;
+        payout = GAME_CONFIG.COST * GAME_CONFIG.DOUBLE_WIN_MULTIPLIER;
         addMoney(payout);
-        setResultMessage(`You win double! $${payout}!`);
+        setResultMessage(`You win double! ${GAME_CONFIG.CURRENCY}${payout}!`);
         outcomeTypeValue = "2X_WIN";
       } else if (result === "FREE SPIN") {
         addFreeSpin();

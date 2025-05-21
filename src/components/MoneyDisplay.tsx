@@ -1,5 +1,5 @@
 import React from "react";
-import { SPIN_COST } from "../gameConstants";
+import { GAME_CONFIG } from "../context/gameConfig";
 
 type MoneyDisplayProps = {
   tivoliBalance: number | null;
@@ -26,13 +26,13 @@ const MoneyDisplay = ({
           )}
         </div>
         <div className="text-center mt-2">
-          <p className="text-sm text-gray-400">Cost per spin: ${SPIN_COST}</p>
+          <p className="text-sm text-gray-400">Cost per spin: ${GAME_CONFIG.COST}</p>
         </div>
       </div>
 
       {!canAffordSpin && (
         <div className="bg-red-700 text-white px-4 md:px-6 py-3 rounded-lg mt-2 text-sm md:text-base">
-          <p className="text-center">Not enough money to spin! You need at least ${SPIN_COST}</p>
+          <p className="text-center">Not enough money to spin! You need at least ${GAME_CONFIG.COST}</p>
         </div>
       )}
     </div>
