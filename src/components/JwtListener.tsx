@@ -12,20 +12,35 @@ export default function JwtListener({ onTokenReceived }: JwtListenerProps) {
       localStorage.removeItem("token");
     }
 
+    // Check if we're in an iframe (launched from Tivoli)
+    const isInIframe = window.parent !== window;
+    
     // Send GAME_READY message to parent if we're in an iframe
-    if (window.parent !== window) {
+    if (isInIframe) {
       try {
-        console.log("Sending GAME_READY message to parent window");
+        console.log("Game is in iframe - sending GAME_READY message to parent window");
         window.parent.postMessage({ type: "GAME_READY" }, "*");
       } catch (err) {
         console.error("[JwtListener] Failed to send GAME_READY:", err);
       }
+    } else {
+      console.log("Game is not in iframe - direct access detected");
     }
 
     // Listen for messages from parent window
     const handleMessage = (event: MessageEvent) => {
-      console.log("Received message:", event.data);
       const data = event.data;
+      
+      // Filter out React DevTools and other unwanted messages
+      if (data && typeof data === "object") {
+        if (data.source === "react-devtools-content-script" || 
+            data.source === "react-devtools-bridge" ||
+            data.source === "react-devtools-detector") {
+          return; // Ignore React DevTools messages
+        }
+      }
+      
+      console.log("Received relevant message:", data);
       let jwt: string | null = null;
 
       // Check different formats the token might come in
@@ -53,9 +68,9 @@ export default function JwtListener({ onTokenReceived }: JwtListenerProps) {
 
     window.addEventListener("message", handleMessage);
 
-    // If no token received after 5 seconds, resend GAME_READY
+    // If no token received after 5 seconds and we're in iframe, resend GAME_READY
     const timeout = setTimeout(() => {
-      if (!localStorage.getItem("token") && window.parent !== window) {
+      if (!localStorage.getItem("token") && isInIframe) {
         try {
           console.log("No token received yet, resending GAME_READY");
           window.parent.postMessage({ type: "GAME_READY" }, "*");
@@ -71,5 +86,5 @@ export default function JwtListener({ onTokenReceived }: JwtListenerProps) {
     };
   }, [onTokenReceived]);
 
-  return null; // This component doesn't render anything
+  return null;
 }

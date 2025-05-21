@@ -1,19 +1,23 @@
 import { buyTicket, awardStamp } from './transactionService';
 
 class TivoliApiService {
-  // Development detection
   static isDevelopment = 
     process.env.NODE_ENV === 'development' || 
     window.location.hostname === "localhost" || 
     window.location.hostname === "127.0.0.1";
   
   /**
+   * Check if we're in test mode
+   */
+  static isTestMode(): boolean {
+    const token = localStorage.getItem('token');
+    return this.isDevelopment && token === 'test-token-for-development';
+  }
+  
+  /**
    * Get the token from localStorage
    */
   static getToken(): string | null {
-    if (this.isDevelopment) {
-      return "dev-token"; // Fake token for development
-    }
     return localStorage.getItem('token');
   }
   
@@ -21,8 +25,8 @@ class TivoliApiService {
    * Report a spin (charge the user for playing)
    */
   static async reportSpin(): Promise<void> {
-    if (this.isDevelopment) {
-      console.log("Development mode: Simulating successful spin transaction");
+    if (this.isDevelopment || this.isTestMode()) {
+      console.log("Development/Test mode: Simulating successful spin transaction");
       return Promise.resolve();
     }
     
@@ -38,8 +42,8 @@ class TivoliApiService {
    * Report winnings (pay the user)
    */
   static async reportWinnings(): Promise<void> {
-    if (this.isDevelopment) {
-      console.log("Development mode: Simulating successful winnings transaction");
+    if (this.isDevelopment || this.isTestMode()) {
+      console.log("Development/Test mode: Simulating successful winnings transaction");
       return Promise.resolve();
     }
     
@@ -51,11 +55,8 @@ class TivoliApiService {
     return awardStamp(token);
   }
 
-  /**
-   * Fetch the user's current balance
-   */
   static async getUserBalance(): Promise<number> {
-    return 100; // Placeholder value
+    return 100;
   }
 }
 
