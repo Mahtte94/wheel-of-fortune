@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { SPIN_COST, WIN_MULTIPLIER } from "../gameConstants";
+import TivoliApiService from "../api/TivoliApiService";
 
 type Segment = { label: string | number; color: string };
 
@@ -13,38 +14,65 @@ export function useGameLogic(
   const [resultMessage, setResultMessage] = useState<string>("");
   const [gameCompleted, setGameCompleted] = useState<boolean>(false);
   const [outcomeType, setOutcomeType] = useState<string | undefined>();
+  const [apiError, setApiError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isSpinning && winningSegmentIndex !== null) {
       const result = segments[winningSegmentIndex].label;
+      let payout = 0;
+      let outcomeTypeValue = "";
 
       if (result === "JACKPOT") {
-        const payout = SPIN_COST * WIN_MULTIPLIER;
+        payout = SPIN_COST * WIN_MULTIPLIER;
         addMoney(payout);
         setResultMessage(`JACKPOT! You win $${payout}!`);
-        setOutcomeType("JACKPOT");
+        outcomeTypeValue = "JACKPOT";
       } else if (result === "2X WIN") {
-        const payout = SPIN_COST * 2;
+        payout = SPIN_COST * 2;
         addMoney(payout);
         setResultMessage(`You win double! $${payout}!`);
-        setOutcomeType("2X WIN");
+        outcomeTypeValue = "2X_WIN";
       } else if (result === "FREE SPIN") {
         addFreeSpin();
         setResultMessage(`You got a free spin!`);
-        setOutcomeType("FREE SPIN");
+        outcomeTypeValue = "FREE_SPIN";
       } else {
         setResultMessage(`Try again! No winnings this time.`);
-        setOutcomeType("TRY AGAIN");
+        outcomeTypeValue = "TRY_AGAIN";
+      }
+
+      setOutcomeType(outcomeTypeValue);
+      
+      // Report result to Tivoli API if there's a payout
+      if (payout > 0) {
+        reportResultToTivoliApi(payout, outcomeTypeValue);
       }
 
       setGameCompleted(true);
     }
   }, [isSpinning, winningSegmentIndex, segments, addMoney, addFreeSpin]);
 
+  const reportResultToTivoliApi = async (amount: number, type: string) => {
+    try {
+      // Only report positive winnings to the API
+      if (amount > 0) {
+        await TivoliApiService.reportGameResult({
+          amount: amount,
+          outcomeType: type
+        });
+      }
+      setApiError(null);
+    } catch (error) {
+      console.error("Failed to report game result to Tivoli API", error);
+      setApiError("Failed to report winnings. Please try again later.");
+    }
+  };
+
   const resetGame = () => {
     setResultMessage("");
     setGameCompleted(false);
     setOutcomeType(undefined);
+    setApiError(null);
   };
 
   return {
@@ -52,5 +80,6 @@ export function useGameLogic(
     gameCompleted,
     resetGame,
     outcomeType,
+    apiError
   };
 }
