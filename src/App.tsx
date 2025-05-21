@@ -137,45 +137,9 @@ export default function App() {
   const [tivoliBalance, setTivoliBalance] = useState<number | null>(null);
   const [isBalanceLoading, setIsBalanceLoading] = useState<boolean>(false);
 
-  // Add this useEffect to fetch the Tivoli balance
-  useEffect(() => {
-    const fetchTivoliBalance = async () => {
-      if (!localStorage.getItem("token")) return;
 
-      setIsBalanceLoading(true);
-      try {
-        const balance = await TivoliApiService.getUserBalance();
-        setTivoliBalance(balance);
-      } catch (error) {
-        console.error("Failed to fetch Tivoli balance:", error);
-      } finally {
-        setIsBalanceLoading(false);
-      }
-    };
 
-    fetchTivoliBalance();
 
-    // Refresh the balance every 30 seconds
-    const intervalId = setInterval(fetchTivoliBalance, 30000);
-
-    return () => clearInterval(intervalId);
-  }, []);
-
-  // Add another useEffect to refresh balance after each win
-  useEffect(() => {
-    // If game completed and there was a winning outcome
-    if (gameCompleted && outcomeType && outcomeType !== "TRY AGAIN") {
-      // Wait a moment for the API transaction to process
-      setTimeout(async () => {
-        try {
-          const balance = await TivoliApiService.getUserBalance();
-          setTivoliBalance(balance);
-        } catch (error) {
-          console.error("Failed to refresh Tivoli balance after win:", error);
-        }
-      }, 1000);
-    }
-  }, [gameCompleted, outcomeType]);
 
   return (
     <div className="flex flex-col md:flex-row bg-gray-800 min-h-screen">

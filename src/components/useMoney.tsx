@@ -9,30 +9,7 @@ export function useMoney() {
   const [apiError, setApiError] = useState<string | null>(null);
 
   // Fetch Tivoli balance on component mount and periodically
-  useEffect(() => {
-    const fetchTivoliBalance = async () => {
-      if (!localStorage.getItem("token")) return;
-      
-      setIsBalanceLoading(true);
-      try {
-        const balance = await TivoliApiService.getUserBalance();
-        setTivoliBalance(balance);
-        setApiError(null);
-      } catch (error) {
-        console.error("Failed to fetch Tivoli balance:", error);
-        setApiError("Failed to connect to Tivoli");
-      } finally {
-        setIsBalanceLoading(false);
-      }
-    };
-
-    fetchTivoliBalance();
-    
-    // Refresh the balance every 30 seconds
-    const intervalId = setInterval(fetchTivoliBalance, 30000);
-    
-    return () => clearInterval(intervalId);
-  }, []);
+ 
 
   // Determine if the player can afford a spin
   const canAffordSpin = (tivoliBalance !== null && tivoliBalance >= SPIN_COST) || freeSpins > 0;
@@ -51,8 +28,7 @@ export function useMoney() {
         });
         
         // Update the balance
-        const newBalance = await TivoliApiService.getUserBalance();
-        setTivoliBalance(newBalance);
+        
         setApiError(null);
         return true;
       } catch (error) {
@@ -74,8 +50,7 @@ export function useMoney() {
       });
       
       // Update the balance
-      const newBalance = await TivoliApiService.getUserBalance();
-      setTivoliBalance(newBalance);
+      
       setApiError(null);
       return true;
     } catch (error) {

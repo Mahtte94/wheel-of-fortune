@@ -30,12 +30,12 @@ interface BalanceResponse {
 
 class TivoliApiService {
   private readonly apiUrl: string;
-  private readonly apiKey: string;
+  private readonly apiKey: any;
 
   constructor() {
     // For development, you'd want to make these configurable or environment variables
     this.apiUrl = "https://yrgobanken.vip";
-    this.apiKey = "ba3810c3a695389235b63bb3a3c8eb1adbdd3197e09c4539b58e365f12bb4ca6"; // Replace with your actual API key from Tivoli
+    this.apiKey = process.env.API_KEY; // Replace with your actual API key from Tivoli
   }
 
   /**
@@ -79,35 +79,7 @@ class TivoliApiService {
    * Fetch the user's current balance from Tivoli API
    * @returns Promise with the user's balance or null if error
    */
-  async getUserBalance(): Promise<number | null> {
-    const token = localStorage.getItem("token");
-    
-    if (!token) {
-      console.error("No JWT token found");
-      return null;
-    }
-
-    try {
-      const response = await fetch(`${this.apiUrl}/api/users/balance`, {
-        method: HttpMethod.GET,
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
-          "X-API-Key": this.apiKey
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP Error: ${response.status} ${response.statusText}`);
-      }
-
-      const data = await response.json() as BalanceResponse;
-      return data.data.balance;
-    } catch (error) {
-      console.error("Error fetching user balance:", error);
-      return null;
-    }
-  }
+ 
 
   /**
    * Test the API connection
