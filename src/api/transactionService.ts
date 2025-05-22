@@ -1,25 +1,30 @@
 import { GAME_CONFIG } from "../context/gameConfig";
 
-// This function should handle both the token and API key
+// Dynamiskt API-base-URL beroende på miljö
+const API_BASE_URL = import.meta.env.DEV
+  ? "/api"
+  : import.meta.env.VITE_API_URL || "/api";
+
+// Den här funktionen skickar transaktionen till API:t
 async function postTransaction(
   jwt: string,
   payload: Record<string, unknown>
 ): Promise<void> {
-  if (process.env.NODE_ENV === "development") {
-    console.log("Development mode: Simulating transaction", payload);
-    return;
-  }
+  console.log("API_BASE_URL is:", API_BASE_URL);
 
   try {
     console.log("Sending transaction with payload:", payload);
-    console.log("Using JWT token (first 10 chars):", jwt.substring(0, 10) + "...");
-    
-    const res = await fetch("/api/transactions", {
+    console.log(
+      "Using JWT token (first 10 chars):",
+      jwt.substring(0, 10) + "..."
+    );
+
+    const res = await fetch(`${API_BASE_URL}/transactions`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${jwt}`,
-        "X-API-Key": GAME_CONFIG.API_KEY // Make sure you add this to your GAME_CONFIG
+        Authorization: `Bearer ${jwt}`,
+        "X-API-Key": GAME_CONFIG.API_KEY, // Kontrollera att detta är satt
       },
       body: JSON.stringify(payload),
     });
@@ -41,7 +46,7 @@ async function postTransaction(
         errorData.error || errorData.message || "Transaction failed"
       );
     }
-    
+
     console.log("Transaction successful");
   } catch (err: unknown) {
     console.error("Transaction error:", err);
@@ -51,6 +56,7 @@ async function postTransaction(
   }
 }
 
+// Används för att rapportera ett spel (drar pengar)
 export async function buyTicket(jwt: string): Promise<void> {
   console.log("Buying ticket with amusement ID:", GAME_CONFIG.AMUSEMENT_ID);
   return postTransaction(jwt, {
@@ -59,6 +65,7 @@ export async function buyTicket(jwt: string): Promise<void> {
   });
 }
 
+// Används för att rapportera vinst (ger stämpel)
 export async function awardStamp(jwt: string): Promise<void> {
   console.log("Awarding stamp with stamp ID:", GAME_CONFIG.STAMP_ID);
   return postTransaction(jwt, {
