@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { GAME_CONFIG } from "../context/gameConfig";
-import TivoliApiService from "../api/TivoliApiService";
 
 type Segment = { label: string | number; color: string };
 
@@ -8,7 +7,7 @@ export function useGameLogic(
   isSpinning: boolean,
   winningSegmentIndex: number | null,
   segments: Segment[],
-  addMoney: (amount: number) => void,
+  addMoney: (amount: number) => Promise<boolean>,
   addFreeSpin: () => void
 ) {
   const [resultMessage, setResultMessage] = useState<string>("");
@@ -17,60 +16,55 @@ export function useGameLogic(
   const [apiError, setApiError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!isSpinning && winningSegmentIndex !== null) {
-      const result = segments[winningSegmentIndex].label;
-      let payout = 0;
-      let message = "";
-      let type: string | undefined;
+    const processWin = async () => {
+      if (!isSpinning && winningSegmentIndex !== null) {
+        const result = segments[winningSegmentIndex].label;
+        let payout = 0;
+        let message = "";
+        let type: string | undefined;
 
-      switch (result) {
-        case "JACKPOT":
-          payout = GAME_CONFIG.COST * GAME_CONFIG.JACKPOT_MULTIPLIER;
-          message = `JACKPOT! You win ${GAME_CONFIG.CURRENCY}${payout}!`;
-          type = "JACKPOT";
-          break;
-        case "2X WIN":
-          payout = GAME_CONFIG.COST * GAME_CONFIG.DOUBLE_WIN_MULTIPLIER;
-          message = `You win double! ${GAME_CONFIG.CURRENCY}${payout}!`;
-          type = "2X_WIN";
-          break;
-        case "FREE SPIN":
-          addFreeSpin();
-          message = "You got a free spin!";
-          type = "FREE_SPIN";
-          break;
-        case "TRY AGAIN":
-        default:
-          message = "Try again! No winnings this time.";
-          type = "TRY_AGAIN";
-          break;
+        switch (result) {
+          case "JACKPOT":
+            payout = GAME_CONFIG.COST * GAME_CONFIG.JACKPOT_MULTIPLIER;
+            message = `JACKPOT! You win ${GAME_CONFIG.CURRENCY}${payout}!`;
+            type = "JACKPOT";
+            break;
+          case "2X WIN":
+            payout = GAME_CONFIG.COST * GAME_CONFIG.DOUBLE_WIN_MULTIPLIER;
+            message = `You win double! ${GAME_CONFIG.CURRENCY}${payout}!`;
+            type = "2X_WIN";
+            break;
+          case "FREE SPIN":
+            addFreeSpin();
+            message = "You got a free spin!";
+            type = "FREE_SPIN";
+            break;
+          case "TRY AGAIN":
+          default:
+            message = "Try again! No winnings this time.";
+            type = "TRY_AGAIN";
+            break;
+        }
+
+        // Only if player won money
+        if (payout > 0) {
+          // addMoney already handles the API call
+          const success = await addMoney(payout);
+          if (!success) {
+            setApiError("Failed to process winnings");
+          } else {
+            setApiError(null);
+          }
+        }
+
+        setResultMessage(message);
+        setOutcomeType(type);
+        setGameCompleted(true);
       }
+    };
 
-      // Endast om man vunnit pengar
-      if (payout > 0) {
-        addMoney(payout);
-        reportResultToTivoliApi(payout);
-      }
-
-      setResultMessage(message);
-      setOutcomeType(type);
-      setGameCompleted(true);
-    }
+    processWin();
   }, [isSpinning, winningSegmentIndex, segments, addMoney, addFreeSpin]);
-
-  const reportResultToTivoliApi = async (amount: number) => {
-    try {
-      if (amount > 0) {
-        await TivoliApiService.reportWinnings();
-      }
-      setApiError(null);
-    } catch (error) {
-      console.error("Failed to report game result to Tivoli API", error);
-      setApiError(
-        error instanceof Error ? error.message : "Failed to report winnings"
-      );
-    }
-  };
 
   const resetGame = () => {
     setResultMessage("");

@@ -35,8 +35,8 @@ export function useMoney() {
 
   const addMoney = useCallback(async (amount: number) => {
     try {
-      // Call transactionService via TivoliApiService
-      await TivoliApiService.reportWinnings();
+      // Call transactionService via TivoliApiService with the amount
+      await TivoliApiService.reportWinnings(amount);
       setApiError(null);
       return true;
     } catch (error) {

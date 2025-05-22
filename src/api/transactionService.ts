@@ -24,7 +24,7 @@ async function postTransaction(
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${jwt}`,
-        "X-API-Key": GAME_CONFIG.API_KEY, // Kontrollera att detta är satt
+        "X-API-Key": GAME_CONFIG.API_KEY,
       },
       body: JSON.stringify(payload),
     });
@@ -61,15 +61,31 @@ export async function buyTicket(jwt: string): Promise<void> {
   console.log("Buying ticket with amusement ID:", GAME_CONFIG.AMUSEMENT_ID);
   return postTransaction(jwt, {
     amusement_id: GAME_CONFIG.AMUSEMENT_ID,
+    group_id: GAME_CONFIG.GROUP_ID, // Add this to your game config
     stake_amount: GAME_CONFIG.COST,
+    // user_id is passed via JWT token
   });
 }
 
-// Används för att rapportera vinst (ger stämpel)
+// Används för att rapportera vinst (ger pengar)
+export async function reportPayout(jwt: string, amount: number): Promise<void> {
+  console.log("Reporting payout of amount:", amount);
+  return postTransaction(jwt, {
+    amusement_id: GAME_CONFIG.AMUSEMENT_ID,
+    group_id: GAME_CONFIG.GROUP_ID, // Add this to your game config
+    payout_amount: amount,
+    stamp_id: GAME_CONFIG.STAMP_ID
+    // user_id is passed via JWT token
+  });
+}
+
+// Om du behöver ge stämpel istället för/utöver pengar
 export async function awardStamp(jwt: string): Promise<void> {
   console.log("Awarding stamp with stamp ID:", GAME_CONFIG.STAMP_ID);
   return postTransaction(jwt, {
     amusement_id: GAME_CONFIG.AMUSEMENT_ID,
+    group_id: GAME_CONFIG.GROUP_ID, // Add this to your game config
     stamp_id: GAME_CONFIG.STAMP_ID,
+    // user_id is passed via JWT token
   });
 }
