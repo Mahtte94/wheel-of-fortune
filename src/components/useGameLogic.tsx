@@ -20,34 +20,40 @@ export function useGameLogic(
     if (!isSpinning && winningSegmentIndex !== null) {
       const result = segments[winningSegmentIndex].label;
       let payout = 0;
-      let outcomeTypeValue = "";
+      let message = "";
+      let type: string | undefined;
 
-      if (result === "JACKPOT") {
-        payout = GAME_CONFIG.COST * GAME_CONFIG.JACKPOT_MULTIPLIER;
-        addMoney(payout);
-        setResultMessage(`JACKPOT! You win ${GAME_CONFIG.CURRENCY}${payout}!`);
-        outcomeTypeValue = "JACKPOT";
-      } else if (result === "2X WIN") {
-        payout = GAME_CONFIG.COST * GAME_CONFIG.DOUBLE_WIN_MULTIPLIER;
-        addMoney(payout);
-        setResultMessage(`You win double! ${GAME_CONFIG.CURRENCY}${payout}!`);
-        outcomeTypeValue = "2X_WIN";
-      } else if (result === "FREE SPIN") {
-        addFreeSpin();
-        setResultMessage(`You got a free spin!`);
-        outcomeTypeValue = "FREE_SPIN";
-      } else {
-        setResultMessage(`Try again! No winnings this time.`);
-        outcomeTypeValue = "TRY_AGAIN";
+      switch (result) {
+        case "JACKPOT":
+          payout = GAME_CONFIG.COST * GAME_CONFIG.JACKPOT_MULTIPLIER;
+          message = `JACKPOT! You win ${GAME_CONFIG.CURRENCY}${payout}!`;
+          type = "JACKPOT";
+          break;
+        case "2X WIN":
+          payout = GAME_CONFIG.COST * GAME_CONFIG.DOUBLE_WIN_MULTIPLIER;
+          message = `You win double! ${GAME_CONFIG.CURRENCY}${payout}!`;
+          type = "2X_WIN";
+          break;
+        case "FREE SPIN":
+          addFreeSpin();
+          message = "You got a free spin!";
+          type = "FREE_SPIN";
+          break;
+        case "TRY AGAIN":
+        default:
+          message = "Try again! No winnings this time.";
+          type = "TRY_AGAIN";
+          break;
       }
 
-      setOutcomeType(outcomeTypeValue);
-      
-      // Report result to Tivoli API if there's a payout
+      // Endast om man vunnit pengar
       if (payout > 0) {
+        addMoney(payout);
         reportResultToTivoliApi(payout);
       }
 
+      setResultMessage(message);
+      setOutcomeType(type);
       setGameCompleted(true);
     }
   }, [isSpinning, winningSegmentIndex, segments, addMoney, addFreeSpin]);
@@ -60,7 +66,9 @@ export function useGameLogic(
       setApiError(null);
     } catch (error) {
       console.error("Failed to report game result to Tivoli API", error);
-      setApiError(error instanceof Error ? error.message : "Failed to report winnings");
+      setApiError(
+        error instanceof Error ? error.message : "Failed to report winnings"
+      );
     }
   };
 
@@ -76,6 +84,6 @@ export function useGameLogic(
     gameCompleted,
     resetGame,
     outcomeType,
-    apiError
+    apiError,
   };
 }

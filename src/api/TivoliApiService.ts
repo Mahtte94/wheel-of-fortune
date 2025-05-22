@@ -1,72 +1,70 @@
 import { buyTicket, awardStamp } from "./transactionService";
 
 class TivoliApiService {
+  // Definierar om vi kör i utvecklingsläge (localhost eller liknande)
   static isDevelopment =
     process.env.NODE_ENV === "development" ||
     window.location.hostname === "localhost" ||
-    window.location.hostname === "127.0.0.1" ||
-    window.location.hostname === "http://tivoli.yrgobanken.vip" ||
-    window.location.hostname === "http://yrgobanken.vip";
+    window.location.hostname === "127.0.0.1";
 
   /**
-   * Check if we're in test mode
-   */
-  static isTestMode(): boolean {
-    const token = localStorage.getItem("token");
-    return this.isDevelopment && token === "test-token-for-development";
-  }
-
-  /**
-   * Get the token from localStorage
+   * Hämtar token från localStorage
    */
   static getToken(): string | null {
     return localStorage.getItem("token");
   }
 
   /**
-   * Report a spin (charge the user for playing)
+   * Rapportera att spelaren har snurrat (drar en "biljett")
    */
   static async reportSpin(): Promise<void> {
-    if (this.isDevelopment || this.isTestMode()) {
-      console.log(
-        "Development/Test mode: Simulating successful spin transaction"
-      );
-      return Promise.resolve();
-    }
-
     const token = this.getToken();
+
     if (!token) {
-      throw new Error(
-        "Authentication required. Please launch this game from Tivoli."
-      );
+      if (this.isDevelopment) {
+        console.warn(
+          "[TivoliApiService] No token found – simulating spin transaction (development mode)"
+        );
+        return Promise.resolve();
+      } else {
+        throw new Error(
+          "Authentication required. Please launch this game from Tivoli."
+        );
+      }
     }
 
+    console.log("[TivoliApiService] Reporting spin with real token");
     return buyTicket(token);
   }
 
   /**
-   * Report winnings (pay the user)
+   * Rapportera att spelaren har vunnit (ger stämpel)
    */
   static async reportWinnings(): Promise<void> {
-    if (this.isDevelopment || this.isTestMode()) {
-      console.log(
-        "Development/Test mode: Simulating successful winnings transaction"
-      );
-      return Promise.resolve();
-    }
-
     const token = this.getToken();
+
     if (!token) {
-      throw new Error(
-        "Authentication required. Please launch this game from Tivoli."
-      );
+      if (this.isDevelopment) {
+        console.warn(
+          "[TivoliApiService] No token found – simulating winnings transaction (development mode)"
+        );
+        return Promise.resolve();
+      } else {
+        throw new Error(
+          "Authentication required. Please launch this game from Tivoli."
+        );
+      }
     }
 
+    console.log("[TivoliApiService] Reporting winnings with real token");
     return awardStamp(token);
   }
 
+  /**
+   * (Valfritt) Hämta användarens saldo – placeholder just nu
+   */
   static async getUserBalance(): Promise<number> {
-    return 100;
+    return 100; // Placeholder tills du integrerar riktig API-funktion
   }
 }
 

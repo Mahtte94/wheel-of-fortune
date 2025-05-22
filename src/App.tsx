@@ -4,7 +4,7 @@ import { useMoney } from "./components/useMoney";
 import { useGameLogic } from "./components/useGameLogic";
 import MoneyDisplay from "./components/MoneyDisplay";
 import ResultDisplay from "./components/ResultDisplay";
-import JwtListener from './components/JwtListener';
+import JwtListener from "./components/JwtListener";
 import { segmentsData } from "./gameConstants";
 import { useEffect, useState } from "react";
 import { decodeJwt } from "./components/decodeUtil";
@@ -16,44 +16,43 @@ interface MyTokenPayload {
   [key: string]: any;
 }
 
-
-
-
 // Token Debug Component
 const TokenDebugger = () => {
   const [token, setToken] = useState<string | null>(null);
-  
+
   useEffect(() => {
     const checkToken = () => {
-      const storedToken = localStorage.getItem('token');
+      const storedToken = localStorage.getItem("token");
       const urlParams = new URLSearchParams(window.location.search);
       const tokenFromUrl = urlParams.get("token");
       setToken(storedToken || tokenFromUrl || null);
     };
-    
+
     checkToken();
     // Check again when storage changes
     const interval = setInterval(checkToken, 1000);
     return () => clearInterval(interval);
   }, []);
-  
+
   return (
     <div className="mt-4 p-3 bg-gray-800 text-white rounded text-sm">
       <p className="font-bold">Token Status:</p>
       {token ? (
-        <p className="text-green-400">✓ Token found ({token.substring(0, 10)}...)</p>
+        <p className="text-green-400">
+          ✓ Token found ({token.substring(0, 10)}...)
+        </p>
       ) : (
         <p className="text-red-400">✗ No token found</p>
       )}
-      
-      <button 
+
+      <button
         className="mt-2 px-3 py-1 bg-blue-500 text-white rounded text-xs"
         onClick={() => {
           const urlParams = new URLSearchParams(window.location.search);
           const tokenFromUrl = urlParams.get("token");
-          
+
           if (tokenFromUrl) {
-            localStorage.setItem('token', tokenFromUrl);
+            localStorage.setItem("token", tokenFromUrl);
             setToken(tokenFromUrl);
             alert("Token saved from URL parameter!");
           } else {
@@ -78,16 +77,16 @@ export default function App() {
       // Check URL parameters for token first
       const urlParams = new URLSearchParams(window.location.search);
       const tokenFromUrl = urlParams.get("token");
-      
+
       if (tokenFromUrl) {
         // Store token in localStorage
         localStorage.setItem("token", tokenFromUrl);
-        
+
         // Validate token
         const decoded = decodeJwt<MyTokenPayload>(tokenFromUrl);
         if (decoded) {
           console.log("Decoded JWT from URL:", decoded);
-          
+
           // Check if token is expired
           const currentTime = Math.floor(Date.now() / 1000);
           if (decoded.exp && decoded.exp < currentTime) {
@@ -109,12 +108,12 @@ export default function App() {
       const storedToken = localStorage.getItem("token");
       if (storedToken) {
         // Skip validation for test token
-        if (storedToken === 'test-token-for-development') {
+        if (storedToken === "test-token-for-development") {
           setTivoliAuthStatus("Test mode enabled");
           setIsAuthenticated(true);
           return;
         }
-        
+
         const decoded = decodeJwt<MyTokenPayload>(storedToken);
         if (decoded) {
           console.log("Using stored JWT:", decoded);
@@ -139,7 +138,7 @@ export default function App() {
 
       // No token found
       const isInIframe = window.parent !== window;
-      if (process.env.NODE_ENV === 'development' && !isInIframe) {
+      if (process.env.NODE_ENV === "development" && !isInIframe) {
         setTivoliAuthStatus("Development - awaiting authentication");
         setIsAuthenticated(false);
       } else if (isInIframe) {
@@ -153,7 +152,7 @@ export default function App() {
 
     checkAuthentication();
   }, []);
-  
+
   // Handler for when JwtListener receives a token
   const handleTokenReceived = (token: string) => {
     console.log("Token received from JwtListener");
@@ -166,12 +165,12 @@ export default function App() {
       setIsAuthenticated(false);
     }
   };
-  
+
   // Handler for enabling test mode in development
   const handleEnableTestMode = () => {
     setIsAuthenticated(true);
     setTivoliAuthStatus("Test mode enabled");
-    localStorage.setItem('token', 'test-token-for-development');
+    localStorage.setItem("token", "test-token-for-development");
   };
 
   // Game hooks
@@ -206,12 +205,22 @@ export default function App() {
 
   // Game handlers
   const handleSpinClick = async () => {
-    if (!canAffordSpin) return;
+    console.log("[App] handleSpinClick called");
 
-    const spinDeducted = await deductSpinCost();
-    if (!spinDeducted) {
+    if (!canAffordSpin) {
+      console.log("[App] Can't afford spin – aborting");
       return;
     }
+
+    const spinDeducted = await deductSpinCost();
+    console.log("[App] deductSpinCost returned:", spinDeducted);
+
+    if (!spinDeducted) {
+      console.log("[App] Spin deduction failed – aborting");
+      return;
+    }
+
+    console.log("[App] Spin initiated");
 
     resetGame();
     spin();
@@ -239,112 +248,117 @@ export default function App() {
       <JwtListener onTokenReceived={handleTokenReceived} />
 
       {/* Authentication States */}
-      
-        <>
-          {/* Mobile Layout */}
-          <div className="md:hidden w-full">
-            <div className="flex flex-col items-center p-4 bg-gray-800">
-              <h1 className="text-3xl font-bold text-blue-400 text-center mt-2">
-                Wheel of Fortune
-              </h1>
 
-              {process.env.NODE_ENV === 'development' && <TokenDebugger />}
+      <>
+        {/* Mobile Layout */}
+        <div className="md:hidden w-full">
+          <div className="flex flex-col items-center p-4 bg-gray-800">
+            <h1 className="text-3xl font-bold text-blue-400 text-center mt-2">
+              Wheel of Fortune
+            </h1>
 
-              <div className="mt-4 w-full">
-                <Wheel segments={segmentsData} spinningAngle={angle} />
-                {isResetting && (
-                  <p className="text-center text-2xl text-yellow-500 bold mt-2 animate-pulse">
-                    Resetting wheel...
-                  </p>
-                )}
-              </div>
+            {process.env.NODE_ENV === "development" && <TokenDebugger />}
 
-              <div className="mt-4 w-full flex justify-center">
-                <MoneyDisplay
-                  canAffordSpin={canAffordSpin}
-                  isLoading={isBalanceLoading}
-                />
-              </div>
-
-              <div className="mt-4 w-full flex justify-center">
-                <button
-                  onClick={handleSpinClick}
-                  disabled={!canAffordSpin || isSpinCycleActive}
-                  className="px-6 py-3 bg-blue-500 text-white text-lg rounded disabled:bg-gray-500"
-                >
-                  {isSpinning
-                    ? "Spinning..."
-                    : freeSpins > 0
-                    ? "Use Free Spin"
-                    : "Spin"}
-                </button>
-              </div>
-
-              <div className="mt-6 w-full flex justify-center">
-                <ResultDisplay
-                  resultMessage={resultMessage}
-                  winnings={0}
-                  apiError={apiError}
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Desktop Layout */}
-          <div className="hidden md:flex md:flex-row w-full">
-            <div className="flex flex-col w-1/2 items-center justify-center p-6 bg-gray-800 text-gray-100">
-              <h1 className="text-4xl font-bold text-blue-400 mb-4">
-                Wheel of Fortune
-              </h1>
-
-              <MoneyDisplay
-                canAffordSpin={canAffordSpin}
-                isLoading={isBalanceLoading}
-              />
-
-              <div className="mt-4">
-                <button
-                  onClick={handleSpinClick}
-                  disabled={!canAffordSpin || isSpinCycleActive}
-                  className="px-8 py-4 bg-blue-500 text-white text-xl rounded disabled:bg-gray-500"
-                >
-                  {isSpinning
-                    ? "Spinning..."
-                    : freeSpins > 0
-                    ? "Use Free Spin"
-                    : "Spin"}
-                </button>
-              </div>
-
-              <div className="mt-6">
-                <ResultDisplay
-                  resultMessage={resultMessage}
-                  winnings={0}
-                  outcomeType={outcomeType}
-                  apiError={apiError}
-                />
-              </div>
-            </div>
-
-            <div className="flex flex-col w-1/2 items-center justify-center p-6">
+            <div className="mt-4 w-full">
               <Wheel segments={segmentsData} spinningAngle={angle} />
               {isResetting && (
                 <p className="text-center text-2xl text-yellow-500 bold mt-2 animate-pulse">
                   Resetting wheel...
                 </p>
               )}
+            </div>
 
-              <div className="mt-4 p-3 bg-gray-700 text-white rounded">
-                <p>Tivoli Auth Status: {tivoliAuthStatus || "Checking..."}</p>
-                <p>Token in localStorage: {localStorage.getItem("token") ? "Yes" : "No"}</p>
-                <p>Balance: {playerMoney !== null ? `$${playerMoney}` : "Not loaded"}</p>
-              </div>
+            <div className="mt-4 w-full flex justify-center">
+              <MoneyDisplay
+                canAffordSpin={canAffordSpin}
+                isLoading={isBalanceLoading}
+              />
+            </div>
 
-              {process.env.NODE_ENV === 'development' && <TokenDebugger />}
+            <div className="mt-4 w-full flex justify-center">
+              <button
+                onClick={handleSpinClick}
+                disabled={!canAffordSpin || isSpinCycleActive}
+                className="px-6 py-3 bg-blue-500 text-white text-lg rounded disabled:bg-gray-500"
+              >
+                {isSpinning
+                  ? "Spinning..."
+                  : freeSpins > 0
+                  ? "Use Free Spin"
+                  : "Spin"}
+              </button>
+            </div>
+
+            <div className="mt-6 w-full flex justify-center">
+              <ResultDisplay
+                resultMessage={resultMessage}
+                winnings={0}
+                apiError={apiError}
+              />
             </div>
           </div>
-        </>
-      
+        </div>
+
+        {/* Desktop Layout */}
+        <div className="hidden md:flex md:flex-row w-full">
+          <div className="flex flex-col w-1/2 items-center justify-center p-6 bg-gray-800 text-gray-100">
+            <h1 className="text-4xl font-bold text-blue-400 mb-4">
+              Wheel of Fortune
+            </h1>
+
+            <MoneyDisplay
+              canAffordSpin={canAffordSpin}
+              isLoading={isBalanceLoading}
+            />
+
+            <div className="mt-4">
+              <button
+                onClick={handleSpinClick}
+                disabled={!canAffordSpin || isSpinCycleActive}
+                className="px-8 py-4 bg-blue-500 text-white text-xl rounded disabled:bg-gray-500"
+              >
+                {isSpinning
+                  ? "Spinning..."
+                  : freeSpins > 0
+                  ? "Use Free Spin"
+                  : "Spin"}
+              </button>
+            </div>
+
+            <div className="mt-6">
+              <ResultDisplay
+                resultMessage={resultMessage}
+                winnings={0}
+                outcomeType={outcomeType}
+                apiError={apiError}
+              />
+            </div>
+          </div>
+
+          <div className="flex flex-col w-1/2 items-center justify-center p-6">
+            <Wheel segments={segmentsData} spinningAngle={angle} />
+            {isResetting && (
+              <p className="text-center text-2xl text-yellow-500 bold mt-2 animate-pulse">
+                Resetting wheel...
+              </p>
+            )}
+
+            <div className="mt-4 p-3 bg-gray-700 text-white rounded">
+              <p>Tivoli Auth Status: {tivoliAuthStatus || "Checking..."}</p>
+              <p>
+                Token in localStorage:{" "}
+                {localStorage.getItem("token") ? "Yes" : "No"}
+              </p>
+              <p>
+                Balance:{" "}
+                {playerMoney !== null ? `$${playerMoney}` : "Not loaded"}
+              </p>
+            </div>
+
+            {process.env.NODE_ENV === "development" && <TokenDebugger />}
+          </div>
+        </div>
+      </>
     </div>
   );
 }
