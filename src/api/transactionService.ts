@@ -63,7 +63,7 @@ export async function buyTicket(jwt: string): Promise<void> {
     amusement_id: GAME_CONFIG.AMUSEMENT_ID,
     group_id: GAME_CONFIG.GROUP_ID, // Add this to your game config
     stake_amount: GAME_CONFIG.COST,
-    stamp_id: GAME_CONFIG.STAMP_ID
+    
     // user_id is passed via JWT token
   });
 }
