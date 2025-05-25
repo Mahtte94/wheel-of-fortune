@@ -11,11 +11,6 @@ async function postTransaction(
   payload: Record<string, unknown>
 ): Promise<void> {
   try {
-    console.log(
-      "🚨 Using API key:",
-      GAME_CONFIG.API_KEY.substring(0, 10) + "..."
-    );
-
     const res = await fetch(`${API_BASE_URL}/transactions`, {
       method: "POST",
       headers: {
