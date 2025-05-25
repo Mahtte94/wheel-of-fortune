@@ -16,56 +16,6 @@ interface MyTokenPayload {
   [key: string]: any;
 }
 
-// Token Debug Component
-const TokenDebugger = () => {
-  const [token, setToken] = useState<string | null>(null);
-
-  useEffect(() => {
-    const checkToken = () => {
-      const storedToken = localStorage.getItem("token");
-      const urlParams = new URLSearchParams(window.location.search);
-      const tokenFromUrl = urlParams.get("token");
-      setToken(storedToken || tokenFromUrl || null);
-    };
-
-    checkToken();
-    // Check again when storage changes
-    const interval = setInterval(checkToken, 1000);
-    return () => clearInterval(interval);
-  }, []);
-
-  return (
-    <div className="mt-4 p-3 bg-gray-800 text-white rounded text-sm">
-      <p className="font-bold">Token Status:</p>
-      {token ? (
-        <p className="text-green-400">
-          ✓ Token found ({token.substring(0, 10)}...)
-        </p>
-      ) : (
-        <p className="text-red-400">✗ No token found</p>
-      )}
-
-      <button
-        className="mt-2 px-3 py-1 bg-blue-500 text-white rounded text-xs"
-        onClick={() => {
-          const urlParams = new URLSearchParams(window.location.search);
-          const tokenFromUrl = urlParams.get("token");
-
-          if (tokenFromUrl) {
-            localStorage.setItem("token", tokenFromUrl);
-            setToken(tokenFromUrl);
-            alert("Token saved from URL parameter!");
-          } else {
-            alert("No token found in URL parameters!");
-          }
-        }}
-      >
-        Save Token from URL
-      </button>
-    </div>
-  );
-};
-
 export default function App() {
   const [segments] = useState(() => segmentsData);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
@@ -85,8 +35,6 @@ export default function App() {
         // Validate token
         const decoded = decodeJwt<MyTokenPayload>(tokenFromUrl);
         if (decoded) {
-          console.log("Decoded JWT from URL:", decoded);
-
           // Check if token is expired
           const currentTime = Math.floor(Date.now() / 1000);
           if (decoded.exp && decoded.exp < currentTime) {
@@ -116,8 +64,6 @@ export default function App() {
 
         const decoded = decodeJwt<MyTokenPayload>(storedToken);
         if (decoded) {
-          console.log("Using stored JWT:", decoded);
-
           // Check if token is expired
           const currentTime = Math.floor(Date.now() / 1000);
           if (decoded.exp && decoded.exp < currentTime) {
@@ -155,7 +101,6 @@ export default function App() {
 
   // Handler for when JwtListener receives a token
   const handleTokenReceived = (token: string) => {
-    console.log("Token received from JwtListener");
     const decoded = decodeJwt<MyTokenPayload>(token);
     if (decoded) {
       setIsAuthenticated(true);
@@ -164,13 +109,6 @@ export default function App() {
       setTivoliAuthStatus("Invalid token from postMessage");
       setIsAuthenticated(false);
     }
-  };
-
-  // Handler for enabling test mode in development
-  const handleEnableTestMode = () => {
-    setIsAuthenticated(true);
-    setTivoliAuthStatus("Test mode enabled");
-    localStorage.setItem("token", "test-token-for-development");
   };
 
   // Game hooks
@@ -205,22 +143,15 @@ export default function App() {
 
   // Game handlers
   const handleSpinClick = async () => {
-    console.log("[App] handleSpinClick called");
-
     if (!canAffordSpin) {
-      console.log("[App] Can't afford spin – aborting");
       return;
     }
 
     const spinDeducted = await deductSpinCost();
-    console.log("[App] deductSpinCost returned:", spinDeducted);
 
     if (!spinDeducted) {
-      console.log("[App] Spin deduction failed – aborting");
       return;
     }
-
-    console.log("[App] Spin initiated");
 
     resetGame();
     spin();
@@ -256,8 +187,6 @@ export default function App() {
             <h1 className="text-3xl font-bold text-blue-400 text-center mt-2">
               Wheel of Fortune
             </h1>
-
-            {process.env.NODE_ENV === "development" && <TokenDebugger />}
 
             <div className="mt-4 w-full">
               <Wheel segments={segmentsData} spinningAngle={angle} />

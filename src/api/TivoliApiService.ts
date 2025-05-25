@@ -33,7 +33,6 @@ class TivoliApiService {
       }
     }
 
-    console.log("[TivoliApiService] Reporting spin with real token");
     return buyTicket(token);
   }
 
@@ -56,7 +55,7 @@ class TivoliApiService {
       }
     }
 
-    console.log("[TivoliApiService] Reporting winnings with amount:", amount);
+   
     return reportPayout(token, amount);
   }
 
@@ -79,16 +78,11 @@ class TivoliApiService {
       }
     }
 
-    console.log("[TivoliApiService] Awarding stamp with real token");
+ 
     return awardStamp(token);
   }
 
-  /**
-   * (Valfritt) Hämta användarens saldo – placeholder just nu
-   */
-  static async getUserBalance(): Promise<number> {
-    return 100; // Placeholder tills du integrerar riktig API-funktion
-  }
+ 
 }
 
 export default TivoliApiService;

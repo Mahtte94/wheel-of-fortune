@@ -1,5 +1,4 @@
 import { useState, useCallback } from "react";
-import { SPIN_COST } from "../gameConstants";
 import TivoliApiService from "../api/TivoliApiService";
 
 export function useMoney() {
