@@ -16,55 +16,7 @@ interface MyTokenPayload {
   [key: string]: any;
 }
 
-// Token Debug Component
-const TokenDebugger = () => {
-  const [token, setToken] = useState<string | null>(null);
 
-  useEffect(() => {
-    const checkToken = () => {
-      const storedToken = localStorage.getItem("token");
-      const urlParams = new URLSearchParams(window.location.search);
-      const tokenFromUrl = urlParams.get("token");
-      setToken(storedToken || tokenFromUrl || null);
-    };
-
-    checkToken();
-    // Check again when storage changes
-    const interval = setInterval(checkToken, 1000);
-    return () => clearInterval(interval);
-  }, []);
-
-  return (
-    <div className="mt-4 p-3 bg-gray-800 text-white rounded text-sm">
-      <p className="font-bold">Token Status:</p>
-      {token ? (
-        <p className="text-green-400">
-          ✓ Token found ({token.substring(0, 10)}...)
-        </p>
-      ) : (
-        <p className="text-red-400">✗ No token found</p>
-      )}
-
-      <button
-        className="mt-2 px-3 py-1 bg-blue-500 text-white rounded text-xs"
-        onClick={() => {
-          const urlParams = new URLSearchParams(window.location.search);
-          const tokenFromUrl = urlParams.get("token");
-
-          if (tokenFromUrl) {
-            localStorage.setItem("token", tokenFromUrl);
-            setToken(tokenFromUrl);
-            alert("Token saved from URL parameter!");
-          } else {
-            alert("No token found in URL parameters!");
-          }
-        }}
-      >
-        Save Token from URL
-      </button>
-    </div>
-  );
-};
 
 export default function App() {
   const [segments] = useState(() => segmentsData);
@@ -85,7 +37,6 @@ export default function App() {
         // Validate token
         const decoded = decodeJwt<MyTokenPayload>(tokenFromUrl);
         if (decoded) {
-          console.log("Decoded JWT from URL:", decoded);
 
           // Check if token is expired
           const currentTime = Math.floor(Date.now() / 1000);
@@ -116,7 +67,6 @@ export default function App() {
 
         const decoded = decodeJwt<MyTokenPayload>(storedToken);
         if (decoded) {
-          console.log("Using stored JWT:", decoded);
 
           // Check if token is expired
           const currentTime = Math.floor(Date.now() / 1000);

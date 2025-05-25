@@ -34,7 +34,7 @@ export default function JwtListener({ onTokenReceived }: JwtListenerProps) {
         return; // Ignore messages from other origins
       }
       
-      console.log("Received message from Tivoli:", event.data);
+
       
       const data = event.data;
       let jwt: string | null = null;
@@ -50,7 +50,6 @@ export default function JwtListener({ onTokenReceived }: JwtListenerProps) {
       }
 
       if (jwt && typeof jwt === "string") {
-        console.log("JWT token received from Tivoli, saving to localStorage");
         localStorage.setItem("token", jwt);
         
         // Notify App component
@@ -68,7 +67,6 @@ export default function JwtListener({ onTokenReceived }: JwtListenerProps) {
     // If no token after 3 seconds and in iframe, resend GAME_READY
     const retryTimeout = setTimeout(() => {
       if (!localStorage.getItem("token") && isInIframe) {
-        console.log("No token received, retrying GAME_READY");
         window.parent.postMessage({ type: "GAME_READY" }, "*");
       }
     }, 3000);
