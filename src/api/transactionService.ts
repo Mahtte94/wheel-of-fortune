@@ -1,6 +1,5 @@
 import { GAME_CONFIG } from "../context/gameConfig";
 
-// Dynamiskt API-base-URL beroende på miljö
 const API_BASE_URL = import.meta.env.DEV
   ? "/api"
   : import.meta.env.VITE_API_URL || "/api";
