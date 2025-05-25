@@ -19,7 +19,7 @@ export function useWheelSpin(
   // Define your custom odds here
   const outcomes: Outcome[] = [
     { type: "JACKPOT", weight: 8 },
-    { type: "2X WIN", weight: 8 },
+    { type: "WIN", weight: 8 },
     { type: "FREE SPIN", weight: 8 },
     { type: "TRY AGAIN", weight: 76 },
   ];

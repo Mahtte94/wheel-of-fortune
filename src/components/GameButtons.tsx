@@ -27,7 +27,7 @@ const GameButtons = ({
         disabled={isSpinning || playerGuessIndex === null || !canAffordSpin}
         className="mt-4 text-base md:text-lg px-6 md:px-8 py-3 z-10 w-full max-w-xs"
       >
-        {isSpinning ? "Spinning..." : `Spin the Wheel! (-$${GAME_CONFIG.COST})`}
+        {isSpinning ? "Spinning..." : `Spin the Wheel! (-€${GAME_CONFIG.COST})`}
       </Button>
     );
   }
@@ -51,8 +51,8 @@ const GameButtons = ({
       className="mt-4 text-base md:text-lg px-6 md:px-8 py-3 bg-green-600 hover:bg-green-700 active:bg-green-800 z-10 w-full max-w-xs"
     >
       {canAffordSpin
-        ? `Play Again ($${GAME_CONFIG.COST})`
-        : `Need $${GAME_CONFIG.COST} to Play Again`}
+        ? `Play Again (€${GAME_CONFIG.COST})`
+        : `Need €${GAME_CONFIG.COST} to Play Again`}
     </Button>
   );
 };

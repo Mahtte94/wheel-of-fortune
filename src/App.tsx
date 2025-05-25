@@ -302,7 +302,7 @@ export default function App() {
         {/* Desktop Layout */}
         <div className="hidden md:flex md:flex-row w-full">
           <div className="flex flex-col w-1/2 items-center justify-center p-6 bg-gray-800 text-gray-100">
-            <h1 className="text-4xl font-bold text-blue-400 mb-4">
+            <h1 className="text-6xl font-bold text-blue-400 mb-6">
               Wheel of Fortune
             </h1>
 
@@ -315,7 +315,7 @@ export default function App() {
               <button
                 onClick={handleSpinClick}
                 disabled={!canAffordSpin || isSpinCycleActive}
-                className="px-8 py-4 bg-blue-500 text-white text-xl rounded disabled:bg-gray-500"
+                className="px-8 py-4 bg-blue-500 text-white text-xl rounded disabled:bg-gray-500 mt-3"
               >
                 {isSpinning
                   ? "Spinning..."
@@ -343,7 +343,8 @@ export default function App() {
               </p>
             )}
 
-            <div className="mt-4 p-3 bg-gray-700 text-white rounded">
+            {/* Debug tools */}
+            {/* <div className="mt-4 p-3 bg-gray-700 text-white rounded">
               <p>Tivoli Auth Status: {tivoliAuthStatus || "Checking..."}</p>
               <p>
                 Token in localStorage:{" "}
@@ -353,9 +354,9 @@ export default function App() {
                 Balance:{" "}
                 {playerMoney !== null ? `$${playerMoney}` : "Not loaded"}
               </p>
-            </div>
+            </div> */}
 
-            {process.env.NODE_ENV === "development" && <TokenDebugger />}
+            {/* {process.env.NODE_ENV === "development" && <TokenDebugger />} */}
           </div>
         </div>
       </>

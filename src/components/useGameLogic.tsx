@@ -31,7 +31,7 @@ export function useGameLogic(
             break;
           case "2X WIN":
             payout = GAME_CONFIG.COST * GAME_CONFIG.DOUBLE_WIN_MULTIPLIER;
-            message = `You win double! ${GAME_CONFIG.CURRENCY}${payout}!`;
+            message = `You win! ${GAME_CONFIG.CURRENCY}${payout}!`;
             type = "2X_WIN";
             break;
           case "FREE SPIN":

@@ -1,13 +1,13 @@
 export const segmentsData = [
   { label: "JACKPOT", color: "#ffd700" }, // 1
   { label: "TRY AGAIN", color: "#ff6b6b" }, // 2
-  { label: "2X WIN", color: "#00ff7f" }, // 3
+  { label: "WIN", color: "#00ff7f" }, // 3
   { label: "TRY AGAIN", color: "#ff6b6b" }, // 4
   { label: "FREE SPIN", color: "#66ccff" }, // 5
   { label: "TRY AGAIN", color: "#ff6b6b" }, // 6
   { label: "JACKPOT", color: "#ffd700" }, // 7
   { label: "TRY AGAIN", color: "#ff6b6b" }, // 8
-  { label: "2X WIN", color: "#00ff7f" }, // 9
+  { label: "WIN", color: "#00ff7f" }, // 9
   { label: "TRY AGAIN", color: "#ff6b6b" }, // 10
   { label: "TRY AGAIN", color: "#ff6b6b" }, // 11
   { label: "TRY AGAIN", color: "#ff6b6b" }, // 12

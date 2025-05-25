@@ -6,18 +6,14 @@ type MoneyDisplayProps = {
   isLoading: boolean;
 };
 
-const MoneyDisplay = ({ 
-  canAffordSpin, 
-  isLoading 
-}: MoneyDisplayProps) => {
+const MoneyDisplay = ({ canAffordSpin, isLoading }: MoneyDisplayProps) => {
   return (
-    <div className="w-full max-w-md">
-      <div className="bg-gray-700 px-4 md:px-6 py-3 rounded-lg border-2 border-yellow-400">
+    <div className="w-50 max-w-md">
+      <div className="bg-gray-700 px-4 md:px-6 py-2 rounded-lg">
         <div className="text-center">
-          <p className="text-2xl font-bold text-yellow-400">Wheel of Fortune Game</p>
-        </div>
-        <div className="text-center mt-2">
-          <p className="text-sm text-gray-400">Cost per spin: ${GAME_CONFIG.COST}</p>
+          <p className="text-lg text-white">
+            Cost per spin: €{GAME_CONFIG.COST}
+          </p>
         </div>
       </div>
 
@@ -26,7 +22,7 @@ const MoneyDisplay = ({
           <p className="text-center">Transaction failed. Please try again.</p>
         </div>
       )}
-      
+
       {isLoading && (
         <div className="bg-blue-700 text-white px-4 md:px-6 py-3 rounded-lg mt-2 text-sm md:text-base">
           <p className="text-center">Processing transaction...</p>
