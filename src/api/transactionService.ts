@@ -19,8 +19,7 @@ async function postTransaction(
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${jwt}`,
-        "X-API-Key": GAME_CONFIG.API_KEY,
+        Authorization: `Bearer ${jwt}`
       },
       body: JSON.stringify(payload),
     });
