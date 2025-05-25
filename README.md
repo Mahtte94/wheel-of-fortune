@@ -1,12 +1,29 @@
-# React + Vite
+# 🎡 Wheel of Fortune
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A spinning wheel game built with React, TypeScript, and Vite — designed to integrate with the Yrgo Web Development Class of 2024's Tivoli API, but also playable as a standalone experience.
 
-Currently, two official plugins are available:
+<img width="1443" alt="Screenshot 2025-05-25 at 15 31 26" src="https://github.com/user-attachments/assets/a210c9db-8f6c-46aa-a38a-2a60a9824b38" />
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Features
+* 🎯 Spin-to-win gameplay with dynamic results
 
-## Expanding the ESLint configuration
+* 💸 Money and free spin management
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+* 🔐 JWT-based Tivoli authentication (via URL, postMessage, or localStorage)
+
+* 🧪 Development mode for standalone use
+
+* 📱 Responsive design with separate mobile and desktop layouts
+
+* 🎨 Built using Tailwind CSS for clean UI
+
+* 🔁 Keyboard accessibility (press Space to spin)
+
+## 🛠 Tech Stack
+* Frontend: React, TypeScript
+
+* Build Tool: Vite
+
+* Styling: Tailwind CSS
+
+* Authentication & API: Tivoli platform (JWT tokens, transactions, and payouts)
