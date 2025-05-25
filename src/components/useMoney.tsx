@@ -5,7 +5,7 @@ export function useMoney() {
   const [freeSpins, setFreeSpins] = useState<number>(0);
   const [isBalanceLoading, setIsBalanceLoading] = useState<boolean>(false);
   const [apiError, setApiError] = useState<string | null>(null);
-  
+
   // Simplified: We'll just assume the player always has money unless an error occurs
   const [canAfford, setCanAfford] = useState<boolean>(true);
 
@@ -18,12 +18,17 @@ export function useMoney() {
         setIsBalanceLoading(true);
         // Call transactionService via TivoliApiService
         await TivoliApiService.reportSpin();
+        //Give player a stamp
+        await TivoliApiService.reportStamp();
+
         setApiError(null);
         setCanAfford(true);
         return true;
       } catch (error) {
         console.error("Error deducting spin cost:", error);
-        setApiError(error instanceof Error ? error.message : "Failed to process spin");
+        setApiError(
+          error instanceof Error ? error.message : "Failed to process spin"
+        );
         setCanAfford(false);
         return false;
       } finally {
@@ -40,7 +45,9 @@ export function useMoney() {
       return true;
     } catch (error) {
       console.error("Error adding money:", error);
-      setApiError(error instanceof Error ? error.message : "Failed to process winnings");
+      setApiError(
+        error instanceof Error ? error.message : "Failed to process winnings"
+      );
       return false;
     }
   }, []);
@@ -57,6 +64,6 @@ export function useMoney() {
     addMoney,
     addFreeSpin,
     isBalanceLoading,
-    apiError
+    apiError,
   };
 }

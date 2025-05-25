@@ -29,10 +29,10 @@ export function useGameLogic(
             message = `JACKPOT! You win ${GAME_CONFIG.CURRENCY}${payout}!`;
             type = "JACKPOT";
             break;
-          case "2X WIN":
+          case "WIN":
             payout = GAME_CONFIG.COST * GAME_CONFIG.DOUBLE_WIN_MULTIPLIER;
             message = `You win! ${GAME_CONFIG.CURRENCY}${payout}!`;
-            type = "2X_WIN";
+            type = "WIN";
             break;
           case "FREE SPIN":
             addFreeSpin();
