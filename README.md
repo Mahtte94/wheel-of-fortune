@@ -95,5 +95,5 @@ src/
 MIT License
 
 ## 🙌 Acknowledgements
-Made by Mahtias Jebrand, Filip Lyrheden and Jack Svensson
-Special thanks to the creators of the Tivoli API
+Made by Mahtias Jebrand, Filip Lyrheden and Jack Svensson.
+Special thanks to the creators of the Tivoli API.
