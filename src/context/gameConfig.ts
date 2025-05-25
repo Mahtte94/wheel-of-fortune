@@ -3,7 +3,7 @@ export const GAME_CONFIG = {
   GROUP_ID: 6,
   COST: 3,
   CURRENCY: "€",
-  API_KEY: import.meta.env.VITE_API_KEY,
+  API_KEY: import.meta.env.API_KEY,
   STAMP_ID: 2,
   JACKPOT_MULTIPLIER: 5,
   DOUBLE_WIN_MULTIPLIER: 2,
