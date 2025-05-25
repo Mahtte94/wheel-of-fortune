@@ -155,7 +155,6 @@ export default function App() {
 
   // Handler for when JwtListener receives a token
   const handleTokenReceived = (token: string) => {
-    console.log("Token received from JwtListener");
     const decoded = decodeJwt<MyTokenPayload>(token);
     if (decoded) {
       setIsAuthenticated(true);
@@ -166,12 +165,7 @@ export default function App() {
     }
   };
 
-  // Handler for enabling test mode in development
-  const handleEnableTestMode = () => {
-    setIsAuthenticated(true);
-    setTivoliAuthStatus("Test mode enabled");
-    localStorage.setItem("token", "test-token-for-development");
-  };
+
 
   // Game hooks
   const {
@@ -205,22 +199,16 @@ export default function App() {
 
   // Game handlers
   const handleSpinClick = async () => {
-    console.log("[App] handleSpinClick called");
 
     if (!canAffordSpin) {
-      console.log("[App] Can't afford spin – aborting");
       return;
     }
 
     const spinDeducted = await deductSpinCost();
-    console.log("[App] deductSpinCost returned:", spinDeducted);
 
     if (!spinDeducted) {
-      console.log("[App] Spin deduction failed – aborting");
       return;
     }
-
-    console.log("[App] Spin initiated");
 
     resetGame();
     spin();
@@ -257,7 +245,7 @@ export default function App() {
               Wheel of Fortune
             </h1>
 
-            {process.env.NODE_ENV === "development" && <TokenDebugger />}
+            
 
             <div className="mt-4 w-full">
               <Wheel segments={segmentsData} spinningAngle={angle} />
@@ -343,19 +331,6 @@ export default function App() {
               </p>
             )}
 
-            <div className="mt-4 p-3 bg-gray-700 text-white rounded">
-              <p>Tivoli Auth Status: {tivoliAuthStatus || "Checking..."}</p>
-              <p>
-                Token in localStorage:{" "}
-                {localStorage.getItem("token") ? "Yes" : "No"}
-              </p>
-              <p>
-                Balance:{" "}
-                {playerMoney !== null ? `$${playerMoney}` : "Not loaded"}
-              </p>
-            </div>
-
-            {process.env.NODE_ENV === "development" && <TokenDebugger />}
           </div>
         </div>
       </>

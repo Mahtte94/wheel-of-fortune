@@ -1,4 +1,4 @@
-// src/components/JwtListener.tsx
+
 import { useEffect } from "react";
 
 interface JwtListenerProps {
@@ -15,14 +15,12 @@ export default function JwtListener({ onTokenReceived }: JwtListenerProps) {
     // Send GAME_READY message to parent if we're in an iframe
     if (isInIframe) {
       try {
-        console.log("Game loaded in iframe - sending GAME_READY to Tivoli");
+        
         window.parent.postMessage({ type: "GAME_READY" }, "*");
       } catch (err) {
         console.error("[JwtListener] Failed to send GAME_READY:", err);
       }
-    } else {
-      console.log("Game not in iframe - direct access");
-    }
+    } 
 
     // Listen for token from parent window
     const handleMessage = (event: MessageEvent) => {

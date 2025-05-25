@@ -83,12 +83,7 @@ class TivoliApiService {
     return awardStamp(token);
   }
 
-  /**
-   * (Valfritt) Hämta användarens saldo – placeholder just nu
-   */
-  static async getUserBalance(): Promise<number> {
-    return 100; // Placeholder tills du integrerar riktig API-funktion
-  }
+ 
 }
 
 export default TivoliApiService;

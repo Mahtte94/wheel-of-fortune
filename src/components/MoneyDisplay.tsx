@@ -1,4 +1,3 @@
-import React from "react";
 import { GAME_CONFIG } from "../context/gameConfig";
 
 type MoneyDisplayProps = {
