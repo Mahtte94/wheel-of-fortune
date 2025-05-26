@@ -75,3 +75,12 @@ export async function awardStamp(jwt: string): Promise<void> {
     // user_id is passed via JWT token
   });
 }
+
+export async function awardSpecificStamp(jwt: string, stampId: number): Promise<void> {
+  return postTransaction(jwt, {
+    amusement_id: GAME_CONFIG.AMUSEMENT_ID,
+    group_id: GAME_CONFIG.GROUP_ID,
+    stamp_id: stampId,
+    // user_id is passed via JWT token
+  });
+}
