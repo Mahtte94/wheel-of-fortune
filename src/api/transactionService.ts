@@ -55,17 +55,13 @@ export async function buyTicket(jwt: string): Promise<void> {
   });
 }
 
-
-
-
-export async function reportPayout(jwt: string, amount: number, customStampId?: number): Promise<void> {
-  const stampId = customStampId || GAME_CONFIG.STAMP_ID;
-  
+// Används för att rapportera vinst (ger pengar)
+export async function reportPayout(jwt: string, amount: number): Promise<void> {
   return postTransaction(jwt, {
     amusement_id: GAME_CONFIG.AMUSEMENT_ID,
-    group_id: GAME_CONFIG.GROUP_ID,
+    group_id: GAME_CONFIG.GROUP_ID, // Add this to your game config
     payout_amount: amount,
-    stamp_id: stampId,
+    stamp_id: GAME_CONFIG.STAMP_ID,
     // user_id is passed via JWT token
   });
 }
@@ -74,7 +70,7 @@ export async function reportPayout(jwt: string, amount: number, customStampId?: 
 export async function awardStamp(jwt: string): Promise<void> {
   return postTransaction(jwt, {
     amusement_id: GAME_CONFIG.AMUSEMENT_ID,
-    group_id: GAME_CONFIG.GROUP_ID,
+    group_id: GAME_CONFIG.GROUP_ID, // Add this to your game config
     stamp_id: GAME_CONFIG.STAMP_ID,
     // user_id is passed via JWT token
   });

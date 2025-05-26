@@ -1,6 +1,5 @@
 import { useState, useCallback } from "react";
 import TivoliApiService from "../api/TivoliApiService";
-import { GAME_CONFIG } from "../context/gameConfig";
 
 export function useMoney() {
   const [freeSpins, setFreeSpins] = useState<number>(0);
@@ -38,14 +37,10 @@ export function useMoney() {
     }
   }, [freeSpins]);
 
-  const addMoney = useCallback(async (amount: number, isJackpot: boolean = false) => {
+  const addMoney = useCallback(async (amount: number) => {
     try {
-      // For jackpots, use the bonus stamp ID, otherwise use the default stamp ID
-      const stampId = isJackpot ? GAME_CONFIG.JACKPOT_BONUS_STAMP_ID : undefined;
-      
-      // Single API call that handles both payout and stamp
-      await TivoliApiService.reportWinnings(amount, stampId);
-      
+      // Call transactionService via TivoliApiService with the amount
+      await TivoliApiService.reportWinnings(amount);
       setApiError(null);
       return true;
     } catch (error) {

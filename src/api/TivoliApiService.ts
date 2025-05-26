@@ -37,9 +37,9 @@ class TivoliApiService {
   }
 
   /**
-   * Rapportera att spelaren har vunnit (ger pengar) - now supports custom stamp ID
+   * Rapportera att spelaren har vunnit (ger pengar)
    */
-  static async reportWinnings(amount: number, customStampId?: number): Promise<void> {
+  static async reportWinnings(amount: number): Promise<void> {
     const token = this.getToken();
 
     if (!token) {
@@ -55,7 +55,8 @@ class TivoliApiService {
       }
     }
 
-    return reportPayout(token, amount, customStampId);
+   
+    return reportPayout(token, amount);
   }
 
   /**
@@ -77,8 +78,11 @@ class TivoliApiService {
       }
     }
 
+ 
     return awardStamp(token);
   }
+
+ 
 }
 
 export default TivoliApiService;

@@ -6,6 +6,5 @@ export const GAME_CONFIG = {
   API_KEY: import.meta.env.API_KEY,
   STAMP_ID: 2,
   JACKPOT_MULTIPLIER: 5,
-  JACKPOT_BONUS_STAMP_ID: 15,
   DOUBLE_WIN_MULTIPLIER: 2,
 };
