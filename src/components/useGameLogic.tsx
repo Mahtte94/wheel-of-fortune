@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { GAME_CONFIG } from "../context/gameConfig";
-import TivoliApiService from "../api/TivoliApiService";
 
 type Segment = { label: string | number; color: string };
 
@@ -8,7 +7,7 @@ export function useGameLogic(
   isSpinning: boolean,
   winningSegmentIndex: number | null,
   segments: Segment[],
-  addMoney: (amount: number) => Promise<boolean>,
+  addMoney: (amount: number, isJackpot?: boolean) => Promise<boolean>,
   addFreeSpin: () => void
 ) {
   const [resultMessage, setResultMessage] = useState<string>("");
@@ -23,19 +22,14 @@ export function useGameLogic(
         let payout = 0;
         let message = "";
         let type: string | undefined;
+        let isJackpot = false;
 
         switch (result) {
           case "JACKPOT":
             payout = GAME_CONFIG.COST * GAME_CONFIG.JACKPOT_MULTIPLIER;
             message = `JACKPOT! You win ${GAME_CONFIG.CURRENCY}${payout} and a bonus stamp!`;
             type = "JACKPOT";
-            
-            try {
-              await TivoliApiService.reportSpecificStamp(GAME_CONFIG.JACKPOT_BONUS_STAMP_ID);
-              console.log("Jackpot bonus stamp awarded successfully");
-            } catch (error) {
-              console.error("Failed to award jackpot bonus stamp:", error);
-            }
+            isJackpot = true;
             break;
           case "WIN":
             payout = GAME_CONFIG.COST * GAME_CONFIG.DOUBLE_WIN_MULTIPLIER;
@@ -56,8 +50,8 @@ export function useGameLogic(
 
         // Only if player won money
         if (payout > 0) {
-          // addMoney already handles the API call
-          const success = await addMoney(payout);
+          // addMoney now handles both the payout and bonus stamp for jackpots
+          const success = await addMoney(payout, isJackpot);
           if (!success) {
             setApiError("Failed to process winnings");
           } else {

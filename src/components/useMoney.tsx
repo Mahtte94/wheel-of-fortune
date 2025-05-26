@@ -37,10 +37,22 @@ export function useMoney() {
     }
   }, [freeSpins]);
 
-  const addMoney = useCallback(async (amount: number) => {
+  const addMoney = useCallback(async (amount: number, isJackpot: boolean = false) => {
     try {
       // Call transactionService via TivoliApiService with the amount
       await TivoliApiService.reportWinnings(amount);
+      
+      // If it's a jackpot, also award the bonus stamp
+      if (isJackpot) {
+        try {
+          await TivoliApiService.reportSpecificStamp(15); // Using the jackpot bonus stamp ID
+          console.log("Jackpot bonus stamp awarded successfully");
+        } catch (stampError) {
+          console.error("Failed to award jackpot bonus stamp:", stampError);
+          // Don't fail the whole transaction if bonus stamp fails
+        }
+      }
+      
       setApiError(null);
       return true;
     } catch (error) {
