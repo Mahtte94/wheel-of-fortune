@@ -80,7 +80,7 @@ export async function awardSpecificStamp(jwt: string, stampId: number): Promise<
   return postTransaction(jwt, {
     amusement_id: GAME_CONFIG.AMUSEMENT_ID,
     group_id: GAME_CONFIG.GROUP_ID,
-    stamp_id: stampId,
+    stamp_id: GAME_CONFIG.JACKPOT_BONUS_STAMP_ID,
     // user_id is passed via JWT token
   });
 }
