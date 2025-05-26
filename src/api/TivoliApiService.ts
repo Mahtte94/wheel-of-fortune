@@ -1,4 +1,4 @@
-import { buyTicket, reportPayout, awardStamp, awardSpecificStamp } from "./transactionService";
+import { buyTicket, reportPayout, awardStamp } from "./transactionService";
 
 class TivoliApiService {
   // Definierar om vi kör i utvecklingsläge (localhost eller liknande)
@@ -37,9 +37,9 @@ class TivoliApiService {
   }
 
   /**
-   * Rapportera att spelaren har vunnit (ger pengar)
+   * Rapportera att spelaren har vunnit (ger pengar) - now supports custom stamp ID
    */
-  static async reportWinnings(amount: number): Promise<void> {
+  static async reportWinnings(amount: number, customStampId?: number): Promise<void> {
     const token = this.getToken();
 
     if (!token) {
@@ -55,8 +55,7 @@ class TivoliApiService {
       }
     }
 
-   
-    return reportPayout(token, amount);
+    return reportPayout(token, amount, customStampId);
   }
 
   /**
@@ -78,30 +77,8 @@ class TivoliApiService {
       }
     }
 
- 
     return awardStamp(token);
   }
-
-  static async reportSpecificStamp(stampId: number): Promise<void> {
-    const token = this.getToken();
-
-    if (!token) {
-      if (this.isDevelopment) {
-        console.warn(
-          `[TivoliApiService] No token found – simulating stamp ${stampId} transaction (development mode)`
-        );
-        return Promise.resolve();
-      } else {
-        throw new Error(
-          "Authentication required. Please launch this game from Tivoli."
-        );
-      }
-    }
-
-    return awardSpecificStamp(token, stampId);
-  }
-
- 
 }
 
 export default TivoliApiService;
